@@ -1,25 +1,35 @@
 Enterprise Ethereum Alliance Vision
 ===================
 
+![EEA로고](https://entethalliance.org/wp-content/themes/ethereum/img/eea-logo.png)
 
-몇 일전 Enterprise Ethereum Alliance(이하 EEA)에서 Vision Paper를 릴리즈하였다. [카페글][1]
+몇 일전 Enterprise Ethereum Alliance(이하 EEA)에서 Vision Paper를 릴리즈하였다. 
 
 간략하게만 정리해 보면 다음과 같다.
 
+
 ----------
+
 EEA에서 Plugin 가능한 합의방식, 거버넌스, 상호운용성, Ethereum 프로토콜, Secure 코드 실행, 저장소와 성능 최적화 등 다양한 주제에 대해 논의하였다.
+
 
 ### 2017년 5가지를 목표로 함!
 
+
 > 1. Plugin 가능한 합의 알고리즘으로 변경하기위한 프로토타입 개발 - P2P 네트워크와 데이터 저장의 Layer 분리와 인터페이스 기반 모듈화
+
 > 2. 데이터 Privacy 및 권한 기반의 프레임 워크 + 합의 알고리즘 테스트
+
 > 3. Enterprise 수준에 맞는 기능 및 성능
 > - 10 Node 참여한 네트워크 기준으로 초당 100개 트랜잭션 처리
 > - Enterprise 급 Use Case
 > - 고 가용성 / 신뢰성
 > - 병렬화 및 수평 Scaling
+
 > 4. 위에 언급한 수준에 맞는 요구 사항과 로드맵을 정의하고, Enterprise Ethereum Ver 1 스펙 개발
+
 > 5. Enterprise Ethereum에 대한 견고한 거버넌스 프로세스 수립
+
 
 #### Plugin 가능한 합의 알고리즘
 
@@ -42,10 +52,12 @@ Public 블록체인 구현체들(Bitcoin, Ethereum 등)이 거버넌스와 관�
 e.g. 블록 크기, SW 업그레이드, Hard/Soft Fork 여부, 블록체인 네트워크에 관련된 참여자 마이너, 개발자, 또 다른 스테이크 홀더등...
 
 그래서 EEA는 참여하는 기업 회원사, 관심 그룹 중심으로 만들어 가면서, 큰 틀에서 네 가지 원칙을 세웠다.
+
 > 1. 오픈 소스로 개발하기
 > 2. 범용 시스템에서 동작할 수 있도록 하기
 > 3. Public Ethereum과 호환성 갖추기
 > 4. 데이터 표준에 대한 혁신을 재촉하지 않기
+
 
 #### 성능/최적화
 
@@ -76,25 +88,27 @@ Public 용도가 아닌 기업향 블록체인이 되기 위해 EEA는 기업수
 
 
 #### 기타
+
 Smart Contract 코드를 안전하게 실행하는 것, 그리고 Contract 업데이트(실행된 데이터에 대한 Migration, legacy등 이러한 Feature는 아주 중요한 요소라고 생각된다.
 
 다른 이야기지만, Hyperledger(Fabric)에서 릴리즈 예정인 Ver 1.0에서 chain code에 이러한 기능을 제공할 것으로 예상이 되는데, 어떠한 방식으로 제공할지 기대되기도 한다.
 
 그리고 현재까지 블록체인 구현체들은 분산 어플리케이션에서 만들어지는 많은 데이터를 저장하기 위해 효율적이지 않기 때문에, IPFS나 Ethereum 프로젝트에 포함된 Swarm 등 몇개 프로젝트를 언급하고 있다.
 
+
 ----
 
-```
-EEA가 상호운용성에 대해서 많이 강조하고 있는 이유는 기업 target이라 어찌보면 명확한 것이다.
 
-실제 PoC나 Pilot을 해보면, 블록체인 기술만 사용하여 단독으로 시작부터 종료되는 서비스나 시스템이 아니라면, 당연히 기존 시스템과 함께 잘 동작해야 한다는 것이다.
+> EEA가 상호운용성에 대해서 많이 강조하고 있는 이유는 기업 target이라 어찌보면 명확한 것이다.
 
-실제 동작하고 있는 Ethereum을 base로 하고, Enterprise의 수준이 요구하는 구체적인 특성들을 고려하고 있어서 기대가 되기도 한다.
+> 실제 PoC나 Pilot을 해보면, 블록체인 기술만 사용하여 단독으로 시작부터 종료되는 서비스나 시스템이 아니라면, 당연히 기존 시스템과 함께 잘 동작해야 한다는 것이다.
 
-Public 블록체인과의 호환성을 가진다거나, Layer를 잘 나누어 모듈화 시키고, Core 모듈과 비표준 기술과의 연동 등 지향하는 바를 차근차근 잘 만들어 갔으면 하는 바램이다.
+> 실제 동작하고 있는 Ethereum을 base로 하고, Enterprise의 수준이 요구하는 구체적인 특성들을 고려하고 있어서 기대가 되기도 한다.
 
-아마도 Enterprise에 집중하겠지만, Public Ethereum과 호환성에 어떤 방식으로 풀어나갈지 궁금해지긴 한다.
-```
+> Public 블록체인과의 호환성을 가진다거나, Layer를 잘 나누어 모듈화 시키고, Core 모듈과 비표준 기술과의 연동 등 지향하는 바를 차근차근 잘 만들어 갔으면 하는 바램이다.
+
+> 아마도 Enterprise에 집중하겠지만, Public Ethereum과 호환성에 어떤 방식으로 풀어나갈지 궁금해지긴 한다.
+
 
 * 최신버전은 아님 (2017년 2월 말 버전)
 [Vision Paper 링크][2]
