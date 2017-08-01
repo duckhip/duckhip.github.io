@@ -91,10 +91,10 @@ Smart Contract 코드를 안전하게 실행하는 것, 그리고 Contract 업�
 
 
 > EEA가 상호운용성에 대해서 많이 강조하고 있는 이유는 기업 target이라 어찌보면 명확한 것이다.
-> 실제 PoC나 Pilot을 해보면, 블록체인 기술만 사용하여 단독으로 시작부터 종료되는 서비스나 시스템이 아니라면, 당연히 기존 시스템과 함께 잘 동작해야 한다는 것이다.
-> 실제 동작하고 있는 Ethereum을 base로 하고, Enterprise의 수준이 요구하는 구체적인 특성들을 고려하고 있어서 기대가 되기도 한다.
-> Public 블록체인과의 호환성을 가진다거나, Layer를 잘 나누어 모듈화 시키고, Core 모듈과 비표준 기술과의 연동 등 지향하는 바를 차근차근 잘 만들어 갔으면 하는 바램이다.
-> 아마도 Enterprise에 집중하겠지만, Public Ethereum과 호환성에 어떤 방식으로 풀어나갈지 궁금해지긴 한다.
+실제 PoC나 Pilot을 해보면, 블록체인 기술만 사용하여 단독으로 시작부터 종료되는 서비스나 시스템이 아니라면, 당연히 기존 시스템과 함께 잘 동작해야 한다는 것이다.
+실제 동작하고 있는 Ethereum을 base로 하고, Enterprise의 수준이 요구하는 구체적인 특성들을 고려하고 있어서 기대가 되기도 한다.
+Public 블록체인과의 호환성을 가진다거나, Layer를 잘 나누어 모듈화 시키고, Core 모듈과 비표준 기술과의 연동 등 지향하는 바를 차근차근 잘 만들어 갔으면 하는 바램이다.
+아마도 Enterprise에 집중하겠지만, Public Ethereum과 호환성에 어떤 방식으로 풀어나갈지 궁금해지긴 한다.
 
 
 * 최신버전은 아님 (2017년 2월 말 버전)
@@ -112,10 +112,11 @@ Smart Contract 코드를 안전하게 실행하는 것, 그리고 Contract 업�
 
 기업이 블록체인 기반 시스템을 적용하려고 할때 해결해야하거나 IT 관리 측면에서 궁금해 하는 부분들(기존 시스템과 상호운용, 인프라 구성, 데이터 저장 등)이 많을 것이며, 때에 따라 기존의 방식이나 시스템을 재사용하기 어려울 수 있을 것이다.
 
-새로운 기술을 적용하거나 도입하기 위한 "의지"가 큰 부분이라는 생각을 해본다.
+하지만, 새로운 기술을 적용하거나 도입하기 위한 "의지"가 큰 부분이라는 생각을 해본다.
  
 
 
 
  [1]: http://cafe.naver.com/decentral/215
  [2]: https://entethalliance.atlassian.net/wiki/download/attachments/37151/EntEthVision-v3.1-24February2017.pdf "EEA Vision"
+ [3]: https://entethalliance.atlassian.net/wiki/display/EEA/Welcome+EEA+Members
