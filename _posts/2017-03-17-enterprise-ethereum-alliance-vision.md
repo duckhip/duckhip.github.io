@@ -100,7 +100,7 @@ Smart Contract 코드를 안전하게 실행하는 것, 그리고 Contract 업�
 
 
 * 최신버전은 아님 (2017년 2월 말 버전)
-[Vision Paper](assets/doc/EntEthVision-v3.1-24February2017.pdf)
+[Vision Paper](/assets/doc/EntEthVision-v3.1-24February2017.pdf)
 
 
 
