@@ -33,11 +33,11 @@ Dr. Gavin이 만든 회사 (Ethereum Foundation 멤버였는데...)
 
 Hacker Account
 <br>
-https://etherscan.io/address/0xb3764761e297d6f121e79c32a65829cd1ddb4d32
+[https://etherscan.io/address/0xb3764761e297d6f121e79c32a65829cd1ddb4d32](https://etherscan.io/address/0xb3764761e297d6f121e79c32a65829cd1ddb4d32)
 
 White Hacker Account
 <br>
-https://etherscan.io/address/0x1dba1131000664b884a1ba238464159892252d3a
+[https://etherscan.io/address/0x1dba1131000664b884a1ba238464159892252d3a](https://etherscan.io/address/0x1dba1131000664b884a1ba238464159892252d3a)
 <br><br>
 
 Parity의 Multi-Sig Wallet은 여러개의 Contract 코드를 사용하고 있으며, Contract간 연결되는 부분에서 부터 취약성이 시작되지만, [EVM, Solidity(LIBRARY, DELEGATECALL, Contract간 연결방법](http://solidity.readthedocs.io/en/develop/introduction-to-smart-contracts.html#delegatecall-callcode-and-libraries)과 [Proxy library pattern](https://blog.zeppelin.solutions/proxy-libraries-in-solidity-79fbe4b970fd)에 대해 언급하지 않고, 최대한 간단하게 [Contract 기능의 Type](http://solidity.readthedocs.io/en/develop/types.html#function-types)이나 기능의 [접근 권한](https://solidity.readthedocs.io/en/develop/contracts.html#function-modifiers)에 대해서만 요약해봄 :D
