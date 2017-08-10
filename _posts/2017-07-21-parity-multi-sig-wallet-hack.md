@@ -71,9 +71,12 @@ WalletLibrary에서 initWallet 함수가 실행되는 scope내에 보면 initDay
 
 어떠한 개발자든 실수를 할 수 있고, 그러한 실수로 인한 bug를 허용하지 않기 위해 진화된 Compiler,  IDE, Test Framework, CI... 등 다양한 도구나 환경을 활용하여 좋은 품질의 SW를 만드는 노력을 할 수 있다.
 
-이번과 같은 취약성들을 Smart Contract 개발언어 측면에서도 고민하고 있는 프로젝트가 Vitalik이 주도하고 있는 Viper이다.
+이번과 같은 취약성들을 Smart Contract 개발언어 측면에서도 고민하고 있는 프로젝트가 Vitalik이 주도하고 있는 [Viper](https://github.com/ethereum/viper)이다.
 
-이더리움 블록체인의 Test Framework 가운데 Truffle(트러플)과 Embark(엠바크)가 가장 많이 사용되고 있는데, 아주 유용한 도구들이다.
+이더리움 블록체인의 Test Framework 가운데 [Truffle(트러플)](http://truffleframework.com/)과 [Embark(엠바크)](https://github.com/iurimatias/embark-framework)가 가장 많이 사용되고 있는데, 아주 유용한 도구들이다.
 
 개발자 측면에서 Test 도구는 반드시 필요한 영역이고, 내가 만든 코드를 나도 못 믿기 때문에 TDD(테스트 주도 개발)를 실천할 수 있도록 노력해야한다.
 
+ [1]: https://medium.freecodecamp.org/a-hacker-stole-31m-of-ether-how-it-happened-and-what-it-means-for-ethereum-9e5dc29e33ce
+ [2]: http://hackingdistributed.com/2017/07/20/parity-wallet-not-alone/
+ [3]: https://blog.zeppelin.solutions/on-the-parity-wallet-multisig-hack-405a8c12e8f7
