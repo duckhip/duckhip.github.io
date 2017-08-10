@@ -6,12 +6,12 @@ Multi-Sig Wallet Hack
 
 Parity의 다중서명 지갑의 Smart Contract 보안 취약성을 이용해 해커가 Ether를 훔쳐가는 사건이 일어났다. [Parity blog 관련 링크](https://blog.parity.io/the-multi-sig-hack-a-postmortem/)
 
-작년에도 비슷한시기에 DAO 사건이 있었지만, 이번 기사를 보면서 드는 생각들을 적어본다.
+작년에도 비슷한 시기에 DAO 사건이 있었지만, 이번 기사를 보면서 드는 생각들을 적어본다.
 <br><br>
 한마디로 요약하면, **Parity의 다중서명 Smart Contract 지갑의 Bug** 
 
 <br>
-### **[Parity](https://parity.io/parity.html)** 에 대해서
+#### **[Parity](https://parity.io/parity.html)** 에 대해서
 > Ethereum Client 중 하나!
 <br>
 cf. go-ethereum, pyethapp, cpp-ethereum, ethereumj...
