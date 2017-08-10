@@ -10,6 +10,7 @@ Parity의 다중서명 지갑의 Smart Contract 보안 취약성을 이용해 �
 <br><br>
 한마디로 요약하면, **Parity의 다중서명 Smart Contract 지갑의 Bug** 
 
+<br>
 > [**Parity**](https://parity.io/parity.html)
 <br>
 Ethereum Client 중 하나!
@@ -19,7 +20,7 @@ cf. go-ethereum, pyethapp, cpp-ethereum, ethereumj...
 <br>
 Dr. Gavin이 만든 회사 (Ethereum Foundation 멤버였는데...)
 
-<br><br>
+<br>
 
 
 ### 무슨 일이 일어난 것인가?
@@ -44,13 +45,13 @@ Contract에서 최초 사용자 지갑을 초기화할때, 그 소유자들에 �
 
 하지만, 지갑의 돈을 제어할 수 있는 소유자 정보를 관련 없는 Account가 제어할 수 있도록 만들어져 있었으며, 그러한 취약점을 이용하여 Hacker는 자신이 소유자인것 처럼 설정하여 ETH를 탈취한것이다.
 
-아래는 Wallet 코드의 생성자 부분이며, initWallet 함수를 호출한다.
+아래는 Wallet의 생성자 부분이며, WalletLibrary의 initWallet 함수를 사용할 수 있도록 해 놓았다.
 ![Wallet Contract](/assets/img/20170721_wallet_sol.png)
 
-WalletLibrary 코드에서 initWallet 함수가 실행되는 scope내에 보면 initDaylimit과 initMultiowned을 호출한다.
+WalletLibrary에서 initWallet 함수가 실행되는 scope내에 보면 initDaylimit과 initMultiowned을 호출한다.
 ![WalletLibrary Contract](/assets/img/20170721_walletLibrary_sol.png)
 
-위에서 언급한 initWallet 함수는 외부에서 호출이 가능하고,  소유자 Account를 설정하는 initMultiowned 함수도 역시 외부에서도 호출 가능한 함수로 정의되어 있다.
+위에서 언급한 initWallet 함수는 외부에서 호출이 가능하고, 소유자 Account를 설정하는 initMultiowned 함수도 역시 외부에서도 호출 가능한 함수로 정의되어 있다.
 ![WalletLibrary Contract](/assets/img/20170721_walletLibrary_multiowned_sol.png)
 
 그래서 Hacker는 [이 함수의 취약성을 이용한 트랜잭션으로](https://etherscan.io/tx/0x9dbf0326a03a2a3719c27be4fa69aacc9857fd231a8d9dcaede4bb083def75ec) Multi-Sig Wallet에 보관된 [ETH를 가져간 것이다](https://etherscan.io/tx/0xeef10fc5170f669b86c4cd0444882a96087221325f8bf2f55d6188633aa7be7c).
