@@ -32,9 +32,11 @@ Dr. Gavin이 만든 회사 (Ethereum Foundation 멤버였는데...)
 (실제 인출한 돈은 얼마 안된다고 했는데, 금액이 기억안남;;;)
 
 Hacker Account
+<br>
 https://etherscan.io/address/0xb3764761e297d6f121e79c32a65829cd1ddb4d32
 
 White Hacker Account
+<br>
 https://etherscan.io/address/0x1dba1131000664b884a1ba238464159892252d3a
 <br><br>
 
