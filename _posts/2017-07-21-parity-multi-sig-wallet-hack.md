@@ -11,12 +11,14 @@ Parity의 다중서명 지갑의 Smart Contract 보안 취약성을 이용해 �
 한마디로 요약하면, **Parity의 다중서명 Smart Contract 지갑의 Bug** 
 
 <br>
-> [**Parity**](https://parity.io/parity.html)
+### **[Parity](https://parity.io/parity.html)** 에 대해서
+> Ethereum Client 중 하나!
 <br>
-Ethereum Client 중 하나!
 cf. go-ethereum, pyethapp, cpp-ethereum, ethereumj...
 <br>
+<br>
 언어별 Ethereum Client의 특성이 있고, rust로 개발 (부연설명)
+<br>
 <br>
 Dr. Gavin이 만든 회사 (Ethereum Foundation 멤버였는데...)
 
