@@ -1,6 +1,6 @@
 ![EEA로고](https://entethalliance.org/wp-content/themes/ethereum/img/eea-logo.png)
 
-몇 일전 Enterprise Ethereum Alliance(이하 EEA)에서 Vision Paper를 릴리즈하였다. 
+몇 일전 Enterprise Ethereum Alliance(엔터프라이즈 이더리움 얼라이언스 이하 EEA)에서 Vision Paper를 릴리즈하였다. 
 
 간략하게만 정리해 보면 다음과 같다.
 

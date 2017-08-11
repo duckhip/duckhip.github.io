@@ -1,4 +1,4 @@
-Ethereum Truffle
+Truffle development framework (트러플 - 이더리움 개발/테스트 프레임워크)
 ======================================
 
 이더리움 테스트 프레임워크
