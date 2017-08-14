@@ -1,8 +1,8 @@
-Multi-Sig Wallet Hack
+Multi-Sig Wallet Hack (다중서명 지갑 해킹)
 ===================
 
 
-이틀전 Ethereum 과 관련하여 이슈가 하나 있었다.  
+이틀전 Ethereum 과 관련하여 이슈(이더리움 다중서명 지갑 해킹)가 있었다.
 
 Parity의 다중서명 지갑의 Smart Contract 보안 취약성을 이용해 해커가 Ether를 훔쳐가는 사건이 일어났다. [Parity blog 관련 링크](https://blog.parity.io/the-multi-sig-hack-a-postmortem/)
 

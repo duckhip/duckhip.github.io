@@ -1,3 +1,7 @@
+엔터프라이즈 이더리움 얼라이언스의 비전 발표
+===================
+
+
 ![EEA로고](https://entethalliance.org/wp-content/themes/ethereum/img/eea-logo.png)
 
 몇 일전 Enterprise Ethereum Alliance(엔터프라이즈 이더리움 얼라이언스 이하 EEA)에서 Vision Paper를 릴리즈하였다. 
