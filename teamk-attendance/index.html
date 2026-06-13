@@ -464,6 +464,7 @@
         } else {
           localStorage.removeItem(PROFILE_KEY);
         }
+        submitButton.textContent = '등록 완료';
         showMessage('출석 등록이 완료되었습니다. 운영진 출석부에 곧 반영됩니다.', 'success');
         form.querySelectorAll('input, button').forEach(element => {
           element.disabled = true;
