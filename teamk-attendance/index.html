@@ -26,7 +26,7 @@
       margin: 0;
       min-height: 100vh;
       min-height: 100dvh;
-      padding: max(18px, env(safe-area-inset-top)) 14px max(32px, env(safe-area-inset-bottom));
+      padding: max(10px, env(safe-area-inset-top)) 10px max(16px, env(safe-area-inset-bottom));
       background:
         radial-gradient(circle at top right, rgba(22, 133, 197, 0.18), transparent 34%),
         linear-gradient(180deg, #f8fcff, var(--canvas));
@@ -40,7 +40,7 @@
     }
 
     .brand {
-      margin: 6px 0 14px;
+      margin: 2px 0 8px;
       text-align: center;
     }
 
@@ -50,7 +50,7 @@
       justify-content: center;
       width: 52px;
       height: 52px;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
       border-radius: 16px;
       background: linear-gradient(145deg, var(--brand), var(--brand-dark));
       color: #fff;
@@ -66,7 +66,7 @@
     }
 
     .subtitle {
-      margin: 6px 0 0;
+      margin: 3px 0 0;
       color: var(--muted);
       font-size: 0.9rem;
     }
@@ -81,7 +81,7 @@
 
     .game-info {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 1px;
       background: var(--line);
       border-bottom: 1px solid var(--line);
@@ -89,12 +89,12 @@
 
     .game-item {
       min-width: 0;
-      padding: 13px 14px;
+      padding: 9px 10px;
       background: #f7fbfd;
     }
 
     .game-item.account {
-      grid-column: 1 / -1;
+      white-space: nowrap;
     }
 
     .label {
@@ -106,17 +106,19 @@
 
     .value {
       display: block;
-      overflow-wrap: anywhere;
-      font-size: 0.95rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 0.88rem;
       font-weight: 700;
     }
 
     form {
-      padding: 18px;
+      padding: 12px 14px 14px;
     }
 
     .field {
-      margin-bottom: 15px;
+      margin-bottom: 10px;
     }
 
     .field label {
@@ -124,6 +126,11 @@
       margin-bottom: 7px;
       font-size: 0.9rem;
       font-weight: 700;
+    }
+
+    .required {
+      color: var(--danger);
+      font-size: 0.82em;
     }
 
     input[type="text"] {
@@ -148,7 +155,7 @@
       display: flex;
       align-items: flex-start;
       gap: 10px;
-      margin: 13px 0;
+      margin: 9px 0;
       color: #405463;
       font-size: 0.9rem;
       line-height: 1.45;
@@ -164,8 +171,8 @@
 
     button {
       width: 100%;
-      min-height: 52px;
-      margin-top: 8px;
+      min-height: 48px;
+      margin-top: 5px;
       border: 0;
       border-radius: 12px;
       background: linear-gradient(135deg, var(--brand), var(--brand-dark));
@@ -241,7 +248,7 @@
     }
 
     .privacy {
-      margin: 14px 2px 0;
+      margin: 9px 2px 0;
       color: var(--muted);
       font-size: 0.76rem;
       line-height: 1.5;
@@ -252,12 +259,12 @@
     }
 
     @media (max-width: 360px) {
-      .game-info {
-        grid-template-columns: 1fr;
+      .game-item {
+        padding: 8px;
       }
 
-      .game-item.account {
-        grid-column: auto;
+      .value {
+        font-size: 0.8rem;
       }
     }
   </style>
@@ -294,27 +301,19 @@
 
       <form id="attendanceForm" hidden>
         <div class="field">
-          <label for="name">성명 *</label>
+          <label for="name">성명 <span class="required">(필수)</span></label>
           <input id="name" type="text" maxlength="30" autocomplete="name" placeholder="이름을 입력하세요" required>
-        </div>
-        <div class="field">
-          <label for="team">팀명</label>
-          <input id="team" type="text" maxlength="30" value="TeamK" placeholder="팀명을 입력하세요">
         </div>
         <label class="check-row">
           <input id="minor" type="checkbox">
           <span>소인을 함께 등록합니다.</span>
         </label>
-        <div class="field">
-          <label for="note">비고</label>
-          <input id="note" type="text" maxlength="80" placeholder="No게임, 부상 등 필요한 내용">
-        </div>
         <label class="check-row">
           <input id="remember" type="checkbox" checked>
-          <span>다음 출석 때 이름과 팀명을 자동으로 입력합니다.</span>
+          <span>다음 출석 때 이름을 자동으로 입력합니다.</span>
         </label>
         <button id="submitButton" type="submit">출석 등록</button>
-        <p class="privacy">저장 동의를 선택하면 이름과 팀명이 이 스마트폰의 브라우저에만 저장됩니다. 공용 기기에서는 선택을 해제하세요.</p>
+        <p class="privacy">저장 동의를 선택하면 이름이 이 스마트폰의 브라우저에만 저장됩니다. 공용 기기에서는 선택을 해제하세요.</p>
       </form>
 
       <div id="savedProfile" class="saved-profile">
@@ -387,7 +386,6 @@
         const profile = JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null');
         if (!profile) return;
         document.getElementById('name').value = profile.name || '';
-        document.getElementById('team').value = profile.team || 'TeamK';
         document.getElementById('savedProfile').classList.add('visible');
       } catch (error) {
         localStorage.removeItem(PROFILE_KEY);
@@ -397,9 +395,7 @@
     function clearSavedProfile() {
       localStorage.removeItem(PROFILE_KEY);
       document.getElementById('name').value = '';
-      document.getElementById('team').value = 'TeamK';
       document.getElementById('savedProfile').classList.remove('visible');
-      document.getElementById('name').focus();
     }
 
     function renderAttendanceInfo(result) {
@@ -433,6 +429,13 @@
 
     document.getElementById('clearProfileButton').addEventListener('click', clearSavedProfile);
 
+    document.addEventListener('pointerdown', event => {
+      const nameInput = document.getElementById('name');
+      if (document.activeElement === nameInput && event.target !== nameInput) {
+        nameInput.blur();
+      }
+    });
+
     form.addEventListener('submit', event => {
       event.preventDefault();
       const name = document.getElementById('name').value.trim();
@@ -449,17 +452,16 @@
         date: attendance.date,
         token: attendance.token,
         name,
-        team: document.getElementById('team').value.trim(),
+        team: 'TeamK',
         minor: document.getElementById('minor').checked,
-        note: document.getElementById('note').value.trim()
+        note: ''
       }).then(result => {
         if (!result.success) {
           throw new Error(result.error || '출석 등록에 실패했습니다.');
         }
         if (document.getElementById('remember').checked) {
           localStorage.setItem(PROFILE_KEY, JSON.stringify({
-            name,
-            team: document.getElementById('team').value.trim() || 'TeamK'
+            name
           }));
         } else {
           localStorage.removeItem(PROFILE_KEY);
