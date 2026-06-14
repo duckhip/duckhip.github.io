@@ -308,6 +308,29 @@
       line-height: 1.55;
     }
 
+    .close-fallback {
+      width: min(100%, 520px);
+      margin: 0 auto;
+      padding: 32px 22px;
+      border: 1px solid rgba(217, 226, 232, 0.9);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.96);
+      text-align: center;
+      box-shadow: 0 18px 45px rgba(42, 75, 94, 0.12);
+    }
+
+    .close-fallback strong {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 1.15rem;
+    }
+
+    .close-fallback p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
     @media (max-width: 360px) {
       .game-item {
         padding: 8px;
@@ -386,6 +409,10 @@
       <button id="completionCloseButton" type="button">닫기</button>
     </div>
   </div>
+  <section id="closeFallback" class="close-fallback" hidden>
+    <strong>출석 등록이 완료되었습니다.</strong>
+    <p>이 화면은 자동으로 닫을 수 없습니다.<br>브라우저 탭을 직접 닫아주세요.</p>
+  </section>
 
   <script>
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzPgkd98ZVALSGfY5Z9Q0KbRx1gyo2etlioTR6fpFKmyzO6JbFwQh626L4gCHqtaRxt/exec';
@@ -495,9 +522,15 @@
     document.getElementById('minor').addEventListener('change', event => {
       document.getElementById('minorCount').disabled = !event.target.checked;
     });
-    document.getElementById('completionCloseButton').addEventListener('click', () => {
+
+    function closeMobileAttendance() {
+      document.getElementById('completionModal').hidden = true;
+      document.querySelector('.shell').hidden = true;
+      document.getElementById('closeFallback').hidden = false;
       window.close();
-    });
+    }
+
+    document.getElementById('completionCloseButton').addEventListener('click', closeMobileAttendance);
 
     document.addEventListener('pointerdown', event => {
       const nameInput = document.getElementById('name');
