@@ -110,31 +110,55 @@
     el('adminView').hidden = false;
     el('logoutButton').hidden = false;
   }
+  function renderGameOptions(selectedDate) {
+    var select = el('gameDateSelect');
+    select.innerHTML = '';
+    state.games.forEach(function(game) {
+      var option = document.createElement('option');
+      option.value = game.date;
+      option.textContent = game.date + ' · ' + (game.field || '필드 미정') + ' · ' + game.attendeeCount + '명';
+      select.appendChild(option);
+    });
+    if (selectedDate) select.value = selectedDate;
+  }
+  function applyGameSnapshot(game) {
+    state.game = game;
+    renderGame();
+    markSaved();
+  }
+  function updateGameList(game) {
+    var item = {
+      date: game.gameInfo.date,
+      field: game.gameInfo.field,
+      attendeeCount: game.attendees.length,
+      revision: game.revision || 0
+    };
+    state.games = state.games.filter(function(existing) {
+      return existing.date !== item.date;
+    });
+    state.games.push(item);
+    state.games.sort(function(a, b) { return b.date.localeCompare(a.date); });
+    renderGameOptions(item.date);
+  }
   function loadGames(preferredDate) {
-    return request('admin_list_games').then(function(data) {
+    return request('admin_list_games', {
+      preferredDate: preferredDate || '',
+      includeSelectedGame: true
+    }).then(function(data) {
       state.games = data.games || [];
-      var select = el('gameDateSelect');
-      select.innerHTML = '';
-      state.games.forEach(function(game) {
-        var option = document.createElement('option');
-        option.value = game.date;
-        option.textContent = game.date + ' · ' + (game.field || '필드 미정') + ' · ' + game.attendeeCount + '명';
-        select.appendChild(option);
-      });
-      var date = preferredDate || (state.games[0] && state.games[0].date);
-      if (date) {
-        select.value = date;
-        return loadGame(date);
+      if (data.selectedGame) {
+        renderGameOptions(data.selectedGame.gameInfo.date);
+        applyGameSnapshot(data.selectedGame);
+        return;
       }
+      renderGameOptions('');
       return newGame();
     });
   }
   function loadGame(date) {
     if (state.dirty && !confirm('저장하지 않은 변경을 버리고 이동하시겠습니까?')) return Promise.resolve();
     return request('admin_get_game', { date: date }).then(function(data) {
-      state.game = data;
-      renderGame();
-      markSaved();
+      applyGameSnapshot(data);
     });
   }
   function newGame() {
@@ -271,11 +295,9 @@
       gameInfo: state.game.gameInfo,
       attendees: state.game.attendees
     }).then(function(data) {
-      state.game = data;
-      renderGame();
-      markSaved();
+      applyGameSnapshot(data);
+      updateGameList(data);
       showMessage('서버에 저장했습니다.');
-      loadGames(state.game.gameInfo.date);
       return true;
     }).catch(function(error) {
       if (error.code === 'REVISION_CONFLICT' && error.data) {
