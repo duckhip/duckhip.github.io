@@ -532,13 +532,6 @@
 
     document.getElementById('completionCloseButton').addEventListener('click', closeMobileAttendance);
 
-    document.addEventListener('pointerdown', event => {
-      const nameInput = document.getElementById('name');
-      if (document.activeElement === nameInput && event.target !== nameInput) {
-        nameInput.blur();
-      }
-    });
-
     form.addEventListener('submit', event => {
       event.preventDefault();
       const name = document.getElementById('name').value.trim();

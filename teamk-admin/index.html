@@ -48,7 +48,14 @@
         <div class="section-head"><h2>게임 정보</h2><span id="revisionBadge" class="badge">rev 0</span></div>
         <div class="form-grid">
           <label>게임일자<input id="gameDate" type="date"></label>
-          <label>필드명<input id="gameField"></label>
+          <label>필드명
+            <select id="gameFieldSelect">
+              <option value="베이스캠프-양주">베이스캠프-양주</option>
+              <option value="그리드알파-양주">그리드알파-양주</option>
+              <option value="직접입력">직접입력</option>
+            </select>
+          </label>
+          <label id="customFieldLabel" hidden>필드명 직접입력<input id="gameField"></label>
           <label>게임비<input id="gameFee" type="number" inputmode="numeric"></label>
           <label class="wide">입금계좌<input id="gameAccount"></label>
         </div>
@@ -87,7 +94,6 @@
       <h2 id="attendeeDialogTitle">출석자 추가</h2>
       <input id="attendeeId" type="hidden">
       <label>성명<input id="attendeeName" required></label>
-      <label class="check"><input id="attendeePaid" type="checkbox"> 입금완료</label>
       <label class="check"><input id="attendeeMinor" type="checkbox"> 소인</label>
       <label>비고<input id="attendeeNote"></label>
       <div class="dialog-actions">
@@ -99,6 +105,14 @@
   </dialog>
 
   <div id="message" class="message" hidden></div>
+  <div id="progressOverlay" class="progress-overlay" aria-live="polite" aria-busy="true" hidden>
+    <div class="progress-panel">
+      <div class="spinner" aria-hidden="true"></div>
+      <strong id="progressMessage">서버에서 처리 중입니다.</strong>
+      <div class="progress-track"><span></span></div>
+      <p>완료될 때까지 잠시 기다려주세요.</p>
+    </div>
+  </div>
   <script src="./domain.js"></script>
   <script src="./api.js"></script>
   <script src="./app.js"></script>

@@ -3,16 +3,49 @@
 
   var DEFAULT_SHEET = 'https://docs.google.com/spreadsheets/d/1dTYGLzT5EeYRpKYmzSY8KdIDaFmaDrZnp2Yju8bVnDs/edit';
   var MOBILE_PAGE_URL = 'https://duckhip.github.io/teamk-attendance/';
+  var FIELD_DEFAULT_FEES = {
+    '베이스캠프-양주': '25000',
+    '그리드알파-양주': '35000'
+  };
   var state = { spreadsheetId: '', token: '', games: [], game: null, dirty: false };
   var api = window.TeamKAdminApi;
   var domain = window.TeamKDomain;
+  var progress = domain.createProgressTracker(function(active, message) {
+    if (active) {
+      if (message) el('progressMessage').textContent = message;
+      el('progressOverlay').hidden = false;
+      document.body.setAttribute('aria-busy', 'true');
+    } else {
+      el('progressOverlay').hidden = true;
+      document.body.removeAttribute('aria-busy');
+    }
+  });
 
   function el(id) { return document.getElementById(id); }
   function extractSheetId(value) {
     var match = String(value || '').match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
     return match ? match[1] : String(value || '').trim();
   }
+  function progressLabel(type) {
+    var labels = {
+      admin_list_games: '게임 목록을 불러오는 중입니다.',
+      admin_get_game: '게임 정보를 불러오는 중입니다.',
+      admin_save_game: '서버에 저장하는 중입니다.',
+      configure_mobile_attendance: 'QR 접수 상태를 변경하는 중입니다.',
+      admin_get_pending_mobile_attendance: '새 출석 등록을 확인하는 중입니다.',
+      ack_mobile_attendance: '출석 등록을 반영하는 중입니다.',
+      admin_logout: '로그아웃하는 중입니다.'
+    };
+    return labels[type] || '서버에서 처리 중입니다.';
+  }
+  function beginProgress(message) {
+    progress.begin(message || '서버에서 처리 중입니다.');
+  }
+  function endProgress() {
+    progress.end();
+  }
   function request(type, extra) {
+    beginProgress(progressLabel(type));
     return api.post(Object.assign({
       type: type,
       spreadsheetId: state.spreadsheetId,
@@ -20,7 +53,7 @@
     }, extra || {})).catch(function(error) {
       if (error.code === 'SESSION_EXPIRED' || error.code === 'UNAUTHORIZED') logout(false);
       throw error;
-    });
+    }).finally(endProgress);
   }
   function showMessage(text, error) {
     var box = el('message');
@@ -119,7 +152,7 @@
   function renderGame() {
     var game = state.game;
     el('gameDate').value = game.gameInfo.date || '';
-    el('gameField').value = game.gameInfo.field || '';
+    renderField(game.gameInfo.field || '');
     el('gameFee').value = game.gameInfo.fee || '';
     el('gameAccount').value = game.gameInfo.account || '';
     el('revisionBadge').textContent = 'rev ' + (game.revision || 0);
@@ -127,10 +160,33 @@
     renderSummary();
     renderQr();
   }
+  function renderField(field) {
+    var fixedFields = ['베이스캠프-양주', '그리드알파-양주'];
+    var isFixed = fixedFields.indexOf(field) >= 0;
+    el('gameFieldSelect').value = isFixed ? field : '직접입력';
+    el('gameField').value = isFixed ? '' : field;
+    el('customFieldLabel').hidden = isFixed;
+  }
+  function getSelectedField() {
+    return el('gameFieldSelect').value === '직접입력'
+      ? el('gameField').value.trim()
+      : el('gameFieldSelect').value;
+  }
+  function handleFieldSelect() {
+    var custom = el('gameFieldSelect').value === '직접입력';
+    el('customFieldLabel').hidden = !custom;
+    if (!custom) el('gameField').value = '';
+    if (!custom && FIELD_DEFAULT_FEES[el('gameFieldSelect').value]) {
+      el('gameFee').value = FIELD_DEFAULT_FEES[el('gameFieldSelect').value];
+    }
+    markDirty();
+    renderSummary();
+    if (custom) el('gameField').focus();
+  }
   function syncForm() {
     state.game.gameInfo = {
       date: el('gameDate').value,
-      field: el('gameField').value.trim(),
+      field: getSelectedField(),
       fee: el('gameFee').value,
       account: el('gameAccount').value.trim(),
       locked: true
@@ -164,38 +220,30 @@
   }
   function openAttendee(item) {
     item = item || {};
-    el('attendeeDialogTitle').textContent = item.id ? '출석자 수정' : '출석자 추가';
-    el('attendeeId').value = item.id || '';
+    var isEdit = item.id != null && String(item.id) !== '';
+    el('attendeeDialogTitle').textContent = isEdit ? '출석자 수정' : '출석자 추가';
+    el('attendeeId').value = item.id == null ? '' : String(item.id);
     el('attendeeName').value = item.name || '';
-    el('attendeePaid').checked = Boolean(item.paid);
+    el('attendeeDialog').dataset.paid = isEdit ? String(Boolean(item.paid)) : 'true';
     el('attendeeMinor').checked = Boolean(item.minor);
     el('attendeeNote').value = item.note || '';
-    el('deleteAttendeeButton').hidden = !item.id;
+    el('deleteAttendeeButton').hidden = !isEdit;
     el('attendeeDialog').showModal();
   }
   function saveAttendee() {
     var id = el('attendeeId').value;
     var name = el('attendeeName').value.trim();
     if (!name) return;
-    var duplicate = state.game.attendees.some(function(item) {
-      return item.id !== id && domain.normalizeName(item.name) === domain.normalizeName(name);
-    });
-    if (duplicate) {
+    if (domain.hasDuplicateAttendee(state.game.attendees, name, id)) {
       showMessage('같은 이름이 이미 있습니다.', true);
       return;
     }
-    var attendee = domain.createAttendee({
+    state.game.attendees = domain.upsertAttendee(state.game.attendees, {
       id: id,
       name: name,
-      paid: el('attendeePaid').checked,
       minor: el('attendeeMinor').checked,
       note: el('attendeeNote').value
     });
-    if (id) {
-      state.game.attendees = state.game.attendees.map(function(item) { return item.id === id ? attendee : item; });
-    } else {
-      state.game.attendees.push(attendee);
-    }
     el('attendeeDialog').close();
     renderAttendees();
     renderSummary();
@@ -204,7 +252,7 @@
   function deleteAttendee() {
     var id = el('attendeeId').value;
     if (!id || !confirm('이 출석자를 삭제하시겠습니까?')) return;
-    state.game.attendees = state.game.attendees.filter(function(item) { return item.id !== id; });
+    state.game.attendees = domain.deleteAttendee(state.game.attendees, id);
     el('attendeeDialog').close();
     renderAttendees();
     renderSummary();
@@ -312,6 +360,7 @@
   ['gameDate','gameField','gameFee','gameAccount'].forEach(function(id) {
     el(id).addEventListener('input', function() { markDirty(); renderSummary(); });
   });
+  el('gameFieldSelect').addEventListener('change', handleFieldSelect);
   el('attendeeSearch').addEventListener('input', renderAttendees);
   el('addAttendeeButton').addEventListener('click', function() { openAttendee(); });
   el('attendeeForm').addEventListener('submit', function(event) { event.preventDefault(); saveAttendee(); });

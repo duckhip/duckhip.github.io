@@ -5,6 +5,49 @@
     return String(value || '').trim().replace(/\s+/g, ' ').toLocaleLowerCase();
   }
 
+  function sameId(left, right) {
+    return String(left == null ? '' : left) === String(right == null ? '' : right);
+  }
+
+  function hasDuplicateAttendee(attendees, name, excludeId) {
+    return (attendees || []).some(function(item) {
+      return !sameId(item.id, excludeId) && normalizeName(item.name) === normalizeName(name);
+    });
+  }
+
+  function upsertAttendee(attendees, input) {
+    var list = attendees || [];
+    var existing = list.find(function(item) { return sameId(item.id, input.id); });
+    var attendee = createAttendee({
+      id: input.id,
+      name: input.name,
+      paid: existing ? existing.paid : true,
+      minor: input.minor,
+      note: input.note
+    });
+    if (!existing) return list.concat(attendee);
+    return list.map(function(item) { return sameId(item.id, input.id) ? attendee : item; });
+  }
+
+  function deleteAttendee(attendees, id) {
+    return (attendees || []).filter(function(item) { return !sameId(item.id, id); });
+  }
+
+  function createProgressTracker(onChange) {
+    var depth = 0;
+    return {
+      begin: function(message) {
+        depth++;
+        onChange(true, message, depth);
+      },
+      end: function() {
+        depth = Math.max(0, depth - 1);
+        onChange(depth > 0, '', depth);
+      },
+      depth: function() { return depth; }
+    };
+  }
+
   function createAttendee(input) {
     return {
       id: String(input.id || (Date.now() + Math.random())),
@@ -55,6 +98,11 @@
 
   global.TeamKDomain = {
     normalizeName: normalizeName,
+    sameId: sameId,
+    hasDuplicateAttendee: hasDuplicateAttendee,
+    upsertAttendee: upsertAttendee,
+    deleteAttendee: deleteAttendee,
+    createProgressTracker: createProgressTracker,
     createAttendee: createAttendee,
     calculateSummary: calculateSummary,
     mergeSubmissions: mergeSubmissions
