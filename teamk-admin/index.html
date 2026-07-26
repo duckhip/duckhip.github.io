@@ -89,6 +89,25 @@
     </section>
   </main>
 
+  <dialog id="gameDateDialog" class="calendar-dialog">
+    <div class="calendar-shell">
+      <div class="calendar-head">
+        <button id="calendarPreviousMonth" class="calendar-nav ghost" type="button" aria-label="이전 달">&#8249;</button>
+        <h2 id="calendarMonthLabel" aria-live="polite"></h2>
+        <button id="calendarNextMonth" class="calendar-nav ghost" type="button" aria-label="다음 달">&#8250;</button>
+      </div>
+      <div class="calendar-weekdays" aria-hidden="true">
+        <span class="sunday">일</span><span>월</span><span>화</span><span>수</span>
+        <span>목</span><span>금</span><span class="saturday">토</span>
+      </div>
+      <div id="gameDateCalendar" class="calendar-grid" role="group" aria-labelledby="calendarMonthLabel"></div>
+      <div class="calendar-actions">
+        <button id="calendarTodayButton" type="button" class="secondary">오늘</button>
+        <button type="button" class="ghost" data-close-game-date-dialog>취소</button>
+      </div>
+    </div>
+  </dialog>
+
   <dialog id="attendeeDialog">
     <form id="attendeeForm" method="dialog">
       <h2 id="attendeeDialogTitle">출석자 추가</h2>

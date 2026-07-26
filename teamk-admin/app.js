@@ -9,6 +9,7 @@
     '그리드알파-양주': '35000'
   };
   var state = { spreadsheetId: '', token: '', games: [], game: null, dirty: false };
+  var calendarMonth = new Date();
   var api = window.TeamKAdminApi;
   var domain = window.TeamKDomain;
   var progress = domain.createProgressTracker(function(active, message) {
@@ -153,7 +154,7 @@
         return;
       }
       renderGameOptions('');
-      return newGame();
+      return openNewGameCalendar();
     });
   }
   function loadGame(date) {
@@ -162,15 +163,78 @@
       applyGameSnapshot(data);
     });
   }
-  function newGame() {
-    var date = prompt('새 게임일자를 입력하세요.', new Date().toISOString().slice(0, 10));
-    if (!date) return;
+  function formatDateKey(date) {
+    return [
+      date.getFullYear(),
+      String(date.getMonth() + 1).padStart(2, '0'),
+      String(date.getDate()).padStart(2, '0')
+    ].join('-');
+  }
+  function openNewGameCalendar() {
+    if (state.dirty && !confirm('저장하지 않은 변경을 버리고 새 게임을 만드시겠습니까?')) return;
+    var today = new Date();
+    calendarMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    renderGameDateCalendar();
+    el('gameDateDialog').showModal();
+  }
+  function renderGameDateCalendar() {
+    var year = calendarMonth.getFullYear();
+    var month = calendarMonth.getMonth();
+    var firstDay = new Date(year, month, 1).getDay();
+    var lastDate = new Date(year, month + 1, 0).getDate();
+    var todayKey = formatDateKey(new Date());
+    var gameDates = new Set(state.games.map(function(game) { return game.date; }));
+    var fragment = document.createDocumentFragment();
+    el('calendarMonthLabel').textContent = year + '년 ' + (month + 1) + '월';
+    for (var emptyIndex = 0; emptyIndex < firstDay; emptyIndex += 1) {
+      var empty = document.createElement('span');
+      empty.className = 'calendar-empty';
+      empty.setAttribute('aria-hidden', 'true');
+      fragment.appendChild(empty);
+    }
+    for (var dateNumber = 1; dateNumber <= lastDate; dateNumber += 1) {
+      var date = new Date(year, month, dateNumber);
+      var dateKey = formatDateKey(date);
+      var dayOfWeek = date.getDay();
+      var isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+      var button = document.createElement('button');
+      var number = document.createElement('span');
+      button.type = 'button';
+      button.className = 'calendar-day ' + (isWeekend ? 'weekend' : 'weekday');
+      button.dataset.gameDate = dateKey;
+      button.setAttribute('aria-label', dateKey + ' ' + ['일','월','화','수','목','금','토'][dayOfWeek] + '요일');
+      button.disabled = gameDates.has(dateKey);
+      if (button.disabled) button.setAttribute('aria-label', button.getAttribute('aria-label') + ', 등록된 게임');
+      if (dateKey === todayKey) button.classList.add('today');
+      number.className = 'calendar-day-number';
+      number.textContent = dateNumber;
+      button.appendChild(number);
+      fragment.appendChild(button);
+    }
+    el('gameDateCalendar').replaceChildren(fragment);
+  }
+  function moveCalendarMonth(offset) {
+    calendarMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + offset, 1);
+    renderGameDateCalendar();
+  }
+  function renderDraftGameOption(date) {
+    var select = el('gameDateSelect');
+    var option = document.createElement('option');
+    renderGameOptions('');
+    option.value = date;
+    option.textContent = date + ' · 새 게임';
+    select.prepend(option);
+    select.value = date;
+  }
+  function createNewGame(date) {
     state.game = {
       gameInfo: { date: date, field: '', fee: '', account: DEFAULT_ACCOUNT, locked: false },
       attendees: [],
       revision: 0,
       qr: { effectiveStatus: 'missing', pendingCount: 0 }
     };
+    el('gameDateDialog').close();
+    renderDraftGameOption(date);
     renderGame();
     markDirty();
   }
@@ -396,8 +460,22 @@
   });
   el('logoutButton').addEventListener('click', function() { logout(true); });
   el('gameDateSelect').addEventListener('change', function() { loadGame(this.value); });
-  el('newGameButton').addEventListener('click', newGame);
+  el('newGameButton').addEventListener('click', openNewGameCalendar);
   el('refreshButton').addEventListener('click', function() { loadGame(state.game.gameInfo.date); });
+  el('calendarPreviousMonth').addEventListener('click', function() { moveCalendarMonth(-1); });
+  el('calendarNextMonth').addEventListener('click', function() { moveCalendarMonth(1); });
+  el('calendarTodayButton').addEventListener('click', function() {
+    var today = new Date();
+    calendarMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    renderGameDateCalendar();
+  });
+  el('gameDateCalendar').addEventListener('click', function(event) {
+    var button = event.target.closest('[data-game-date]');
+    if (button && !button.disabled) createNewGame(button.dataset.gameDate);
+  });
+  document.querySelector('[data-close-game-date-dialog]').addEventListener('click', function() {
+    el('gameDateDialog').close();
+  });
   ['gameDate','gameField','gameFee'].forEach(function(id) {
     el(id).addEventListener('input', function() { markDirty(); renderSummary(); });
   });

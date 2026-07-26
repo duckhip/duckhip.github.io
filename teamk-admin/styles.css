@@ -265,6 +265,115 @@ dialog form {
   padding: 20px;
 }
 
+.calendar-dialog {
+  width: min(calc(100% - 16px), 420px);
+  max-width: none;
+}
+
+.calendar-shell {
+  display: grid;
+  gap: 16px;
+  padding: 12px;
+}
+
+.calendar-head {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  gap: 8px;
+  align-items: center;
+}
+
+.calendar-head h2 {
+  margin: 0;
+  text-align: center;
+}
+
+.calendar-nav {
+  padding: 0;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.calendar-weekdays,
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0;
+}
+
+.calendar-weekdays span {
+  color: var(--muted);
+  font-size: .75rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.calendar-weekdays .sunday,
+.calendar-day.weekend:nth-child(7n + 1) {
+  color: var(--danger);
+}
+
+.calendar-weekdays .saturday,
+.calendar-day.weekend:nth-child(7n) {
+  color: var(--teal);
+}
+
+.calendar-day,
+.calendar-empty {
+  min-width: 0;
+  min-height: 44px;
+}
+
+.calendar-day {
+  display: grid;
+  place-items: center;
+  padding: 4px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+}
+
+.calendar-day.weekday .calendar-day-number {
+  font-size: .75rem;
+  font-weight: 700;
+}
+
+.calendar-day.weekend .calendar-day-number {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.calendar-day.today {
+  border-color: var(--teal);
+  background: var(--mint);
+}
+
+.calendar-day:hover:not(:disabled) {
+  background: var(--mint);
+}
+
+.calendar-day:active:not(:disabled) {
+  transform: scale(.96);
+}
+
+.calendar-day:focus-visible,
+.calendar-nav:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+}
+
+.calendar-day:disabled {
+  cursor: not-allowed;
+  opacity: .32;
+}
+
+.calendar-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
 .check {
   display: flex;
   align-items: center;
