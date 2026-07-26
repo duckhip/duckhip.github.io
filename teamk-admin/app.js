@@ -179,8 +179,8 @@
     el('gameDate').value = game.gameInfo.date || '';
     renderField(game.gameInfo.field || '');
     el('gameFee').value = game.gameInfo.fee || '';
-    el('gameAccountDisplay').textContent = DEFAULT_ACCOUNT;
     el('revisionBadge').textContent = 'rev ' + (game.revision || 0);
+    el('attendeeSearch').value = '';
     renderAttendees();
     renderSummary();
     renderQr();
@@ -188,9 +188,10 @@
   function renderField(field) {
     var fixedFields = ['베이스캠프-양주', '그리드알파-양주'];
     var isFixed = fixedFields.indexOf(field) >= 0;
-    el('gameFieldSelect').value = isFixed ? field : '직접입력';
-    el('gameField').value = isFixed ? '' : field;
-    el('customFieldLabel').hidden = isFixed;
+    var isCustom = Boolean(field) && !isFixed;
+    el('gameFieldSelect').value = isFixed ? field : (isCustom ? '직접입력' : '');
+    el('gameField').value = isCustom ? field : '';
+    el('customFieldLabel').hidden = !isCustom;
   }
   function getSelectedField() {
     return el('gameFieldSelect').value === '직접입력'

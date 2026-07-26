@@ -50,6 +50,7 @@
           <label>게임일자<input id="gameDate" type="date"></label>
           <label>필드명
             <select id="gameFieldSelect">
+              <option value="">필드 선택</option>
               <option value="베이스캠프-양주">베이스캠프-양주</option>
               <option value="그리드알파-양주">그리드알파-양주</option>
               <option value="직접입력">직접입력</option>
@@ -57,10 +58,6 @@
           </label>
           <label id="customFieldLabel" hidden>필드명 직접입력<input id="gameField"></label>
           <label>게임비<input id="gameFee" type="number" inputmode="numeric"></label>
-          <div class="account-display wide">
-            <span>입금계좌</span>
-            <strong id="gameAccountDisplay"></strong>
-          </div>
         </div>
       </section>
 
@@ -69,7 +66,7 @@
           <h2>출석자 <small id="attendeeCount"></small></h2>
           <button id="addAttendeeButton" class="secondary">추가</button>
         </div>
-        <input id="attendeeSearch" class="search" placeholder="이름 검색">
+        <input id="attendeeSearch" class="search" placeholder="이름 검색" autocomplete="off">
         <div id="attendeeList" class="attendee-list"></div>
       </section>
 
