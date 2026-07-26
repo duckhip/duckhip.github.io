@@ -21,12 +21,33 @@
     var attendee = createAttendee({
       id: input.id,
       name: input.name,
-      paid: existing ? existing.paid : true,
+      paid: input.paid == null ? (existing ? existing.paid : true) : input.paid,
       minor: input.minor,
       note: input.note
     });
     if (!existing) return list.concat(attendee);
     return list.map(function(item) { return sameId(item.id, input.id) ? attendee : item; });
+  }
+
+  function addAttendeeGroup(attendees, input) {
+    var minorCount = Math.max(0, Math.min(5, parseInt(input.minorCount, 10) || 0));
+    var next = upsertAttendee(attendees, {
+      id: '',
+      name: input.name,
+      paid: input.paid,
+      minor: false,
+      note: input.note
+    });
+    for (var index = 1; index <= minorCount; index++) {
+      next = upsertAttendee(next, {
+        id: '',
+        name: input.name + '+소인' + index,
+        paid: input.paid,
+        minor: true,
+        note: input.note
+      });
+    }
+    return next;
   }
 
   function deleteAttendee(attendees, id) {
@@ -61,12 +82,19 @@
 
   function calculateSummary(gameInfo, attendees) {
     var fee = Math.max(0, parseInt(gameInfo && gameInfo.fee, 10) || 0);
-    var paid = (attendees || []).filter(function(item) { return item.paid; });
-    var adults = paid.filter(function(item) { return !item.minor; }).length;
-    var minors = paid.length - adults;
+    var list = attendees || [];
+    var paidCount = 0;
+    var adults = 0;
+    var minors = 0;
+    list.forEach(function(item) {
+      if (!item.paid) return;
+      paidCount++;
+      if (item.minor) minors++;
+      else adults++;
+    });
     return {
-      totalCount: (attendees || []).length,
-      paidCount: paid.length,
+      totalCount: list.length,
+      paidCount: paidCount,
       adultCount: adults,
       minorCount: minors,
       gameFeeTotal: adults * fee + minors * Math.max(fee - 15000, 0),
@@ -76,18 +104,21 @@
 
   function mergeSubmissions(attendees, submissions) {
     var next = (attendees || []).map(createAttendee);
+    var adultNames = new Set();
     var ids = [];
     var skipped = 0;
+    next.forEach(function(item) {
+      if (!item.minor) adultNames.add(normalizeName(item.name));
+    });
     (submissions || []).forEach(function(submission) {
       var baseName = String(submission.name || '').trim();
-      var exists = next.some(function(item) {
-        return !item.minor && normalizeName(item.name) === normalizeName(baseName);
-      });
-      if (exists) {
+      var normalizedName = normalizeName(baseName);
+      if (!normalizedName || adultNames.has(normalizedName)) {
         skipped++;
         return;
       }
       next.push(createAttendee({ name: baseName, paid: true, note: submission.note }));
+      adultNames.add(normalizedName);
       for (var i = 1; i <= Math.min(5, Number(submission.minorCount) || 0); i++) {
         next.push(createAttendee({ name: baseName + '+소인' + i, paid: true, minor: true, note: submission.note }));
       }
@@ -101,6 +132,7 @@
     sameId: sameId,
     hasDuplicateAttendee: hasDuplicateAttendee,
     upsertAttendee: upsertAttendee,
+    addAttendeeGroup: addAttendeeGroup,
     deleteAttendee: deleteAttendee,
     createProgressTracker: createProgressTracker,
     createAttendee: createAttendee,

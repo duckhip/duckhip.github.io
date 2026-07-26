@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#123746">
   <title>Team-K 모바일 관리자</title>
   <link rel="stylesheet" href="./styles.css">
@@ -57,7 +57,10 @@
           </label>
           <label id="customFieldLabel" hidden>필드명 직접입력<input id="gameField"></label>
           <label>게임비<input id="gameFee" type="number" inputmode="numeric"></label>
-          <label class="wide">입금계좌<input id="gameAccount"></label>
+          <div class="account-display wide">
+            <span>입금계좌</span>
+            <strong id="gameAccountDisplay"></strong>
+          </div>
         </div>
       </section>
 
@@ -94,7 +97,17 @@
       <h2 id="attendeeDialogTitle">출석자 추가</h2>
       <input id="attendeeId" type="hidden">
       <label>성명<input id="attendeeName" required></label>
-      <label class="check"><input id="attendeeMinor" type="checkbox"> 소인</label>
+      <label class="check"><input id="attendeePaid" type="checkbox" checked> 입금 완료</label>
+      <label class="check"><input id="attendeeMinor" type="checkbox"> <span id="attendeeMinorText">소인 추가</span></label>
+      <label id="attendeeMinorCountLabel" hidden>추가할 소인 수
+        <select id="attendeeMinorCount">
+          <option value="1">1명</option>
+          <option value="2">2명</option>
+          <option value="3">3명</option>
+          <option value="4">4명</option>
+          <option value="5">5명</option>
+        </select>
+      </label>
       <label>비고<input id="attendeeNote"></label>
       <div class="dialog-actions">
         <button id="deleteAttendeeButton" type="button" class="danger" hidden>삭제</button>

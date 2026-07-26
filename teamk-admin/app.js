@@ -2,6 +2,7 @@
   'use strict';
 
   var DEFAULT_SHEET = 'https://docs.google.com/spreadsheets/d/1dTYGLzT5EeYRpKYmzSY8KdIDaFmaDrZnp2Yju8bVnDs/edit';
+  var DEFAULT_ACCOUNT = '카카오뱅크 / 3333-25-5603211 / 한성준 (팀케이 모임통장)';
   var MOBILE_PAGE_URL = 'https://duckhip.github.io/teamk-attendance/';
   var FIELD_DEFAULT_FEES = {
     '베이스캠프-양주': '25000',
@@ -31,9 +32,8 @@
       admin_list_games: '게임 목록을 불러오는 중입니다.',
       admin_get_game: '게임 정보를 불러오는 중입니다.',
       admin_save_game: '서버에 저장하는 중입니다.',
+      admin_sync_mobile_attendance: '모바일 출석을 반영하는 중입니다.',
       configure_mobile_attendance: 'QR 접수 상태를 변경하는 중입니다.',
-      admin_get_pending_mobile_attendance: '새 출석 등록을 확인하는 중입니다.',
-      ack_mobile_attendance: '출석 등록을 반영하는 중입니다.',
       admin_logout: '로그아웃하는 중입니다.'
     };
     return labels[type] || '서버에서 처리 중입니다.';
@@ -112,13 +112,14 @@
   }
   function renderGameOptions(selectedDate) {
     var select = el('gameDateSelect');
-    select.innerHTML = '';
+    var fragment = document.createDocumentFragment();
     state.games.forEach(function(game) {
       var option = document.createElement('option');
       option.value = game.date;
       option.textContent = game.date + ' · ' + (game.field || '필드 미정') + ' · ' + game.attendeeCount + '명';
-      select.appendChild(option);
+      fragment.appendChild(option);
     });
+    select.replaceChildren(fragment);
     if (selectedDate) select.value = selectedDate;
   }
   function applyGameSnapshot(game) {
@@ -165,7 +166,7 @@
     var date = prompt('새 게임일자를 입력하세요.', new Date().toISOString().slice(0, 10));
     if (!date) return;
     state.game = {
-      gameInfo: { date: date, field: '', fee: '', account: '', locked: false },
+      gameInfo: { date: date, field: '', fee: '', account: DEFAULT_ACCOUNT, locked: false },
       attendees: [],
       revision: 0,
       qr: { effectiveStatus: 'missing', pendingCount: 0 }
@@ -178,7 +179,7 @@
     el('gameDate').value = game.gameInfo.date || '';
     renderField(game.gameInfo.field || '');
     el('gameFee').value = game.gameInfo.fee || '';
-    el('gameAccount').value = game.gameInfo.account || '';
+    el('gameAccountDisplay').textContent = DEFAULT_ACCOUNT;
     el('revisionBadge').textContent = 'rev ' + (game.revision || 0);
     renderAttendees();
     renderSummary();
@@ -212,7 +213,7 @@
       date: el('gameDate').value,
       field: getSelectedField(),
       fee: el('gameFee').value,
-      account: el('gameAccount').value.trim(),
+      account: DEFAULT_ACCOUNT,
       locked: true
     };
   }
@@ -227,19 +228,26 @@
   function renderAttendees() {
     var query = domain.normalizeName(el('attendeeSearch').value);
     var list = el('attendeeList');
-    list.innerHTML = '';
+    var fragment = document.createDocumentFragment();
     state.game.attendees.filter(function(item) {
       return !query || domain.normalizeName(item.name).indexOf(query) >= 0;
     }).forEach(function(item) {
       var row = document.createElement('button');
       row.type = 'button';
       row.className = 'attendee';
-      row.innerHTML = '<div><strong></strong><span></span></div><b>편집</b>';
-      row.querySelector('strong').textContent = item.name;
-      row.querySelector('span').textContent = (item.paid ? '입금완료' : '미입금') + (item.minor ? ' · 소인' : '') + (item.note ? ' · ' + item.note : '');
+      var body = document.createElement('div');
+      var name = document.createElement('strong');
+      var meta = document.createElement('span');
+      var action = document.createElement('b');
+      name.textContent = item.name;
+      meta.textContent = (item.paid ? '입금완료' : '미입금') + (item.minor ? ' · 소인' : '') + (item.note ? ' · ' + item.note : '');
+      action.textContent = '편집';
+      body.append(name, meta);
+      row.append(body, action);
       row.addEventListener('click', function() { openAttendee(item); });
-      list.appendChild(row);
+      fragment.appendChild(row);
     });
+    list.replaceChildren(fragment);
     el('attendeeCount').textContent = state.game.attendees.length + '명';
   }
   function openAttendee(item) {
@@ -248,8 +256,11 @@
     el('attendeeDialogTitle').textContent = isEdit ? '출석자 수정' : '출석자 추가';
     el('attendeeId').value = item.id == null ? '' : String(item.id);
     el('attendeeName').value = item.name || '';
-    el('attendeeDialog').dataset.paid = isEdit ? String(Boolean(item.paid)) : 'true';
+    el('attendeePaid').checked = isEdit ? Boolean(item.paid) : true;
     el('attendeeMinor').checked = Boolean(item.minor);
+    el('attendeeMinorText').textContent = isEdit ? '소인' : '소인 추가';
+    el('attendeeMinorCount').value = '1';
+    updateMinorCountField();
     el('attendeeNote').value = item.note || '';
     el('deleteAttendeeButton').hidden = !isEdit;
     el('attendeeDialog').showModal();
@@ -262,16 +273,31 @@
       showMessage('같은 이름이 이미 있습니다.', true);
       return;
     }
-    state.game.attendees = domain.upsertAttendee(state.game.attendees, {
+    var input = {
       id: id,
       name: name,
+      paid: el('attendeePaid').checked,
       minor: el('attendeeMinor').checked,
-      note: el('attendeeNote').value
-    });
+      note: el('attendeeNote').value.trim()
+    };
+    if (id) {
+      state.game.attendees = domain.upsertAttendee(state.game.attendees, input);
+      showMessage('출석자 정보를 수정했습니다.');
+    } else {
+      input.minorCount = input.minor ? el('attendeeMinorCount').value : 0;
+      state.game.attendees = domain.addAttendeeGroup(state.game.attendees, input);
+      var addedCount = Number(input.minorCount) + 1;
+      showMessage('출석자 ' + addedCount + '명을 추가했습니다.');
+    }
     el('attendeeDialog').close();
+    el('attendeeSearch').value = '';
     renderAttendees();
     renderSummary();
     markDirty();
+  }
+  function updateMinorCountField() {
+    var isEdit = Boolean(el('attendeeId').value);
+    el('attendeeMinorCountLabel').hidden = isEdit || !el('attendeeMinor').checked;
   }
   function deleteAttendee() {
     var id = el('attendeeId').value;
@@ -328,8 +354,9 @@
     var payload = qrPayload(open, renew);
     return request('configure_mobile_attendance', payload).then(function(result) {
       state.game.qr = Object.assign({}, state.game.qr, result, { token: result.token || payload.token });
-      return loadGame(state.game.gameInfo.date);
-    }).then(function() { showMessage(open ? 'QR 접수를 시작했습니다.' : 'QR 접수를 마감했습니다.'); })
+      renderQr();
+      showMessage(open ? 'QR 접수를 시작했습니다.' : 'QR 접수를 마감했습니다.');
+    })
       .catch(function(error) { showMessage(error.message, true); });
   }
   function renderQr() {
@@ -346,24 +373,15 @@
     navigator.clipboard.writeText(url).then(function() { showMessage('QR 주소를 복사했습니다.'); });
   }
   function importPending() {
-    return request('admin_get_pending_mobile_attendance', { date: state.game.gameInfo.date }).then(function(data) {
-      var merged = domain.mergeSubmissions(state.game.attendees, data.submissions || []);
-      if (!merged.submissionIds.length) {
-        showMessage(merged.skipped ? '이미 등록된 이름만 있어 반영하지 않았습니다.' : '새 등록이 없습니다.');
-        return;
-      }
-      state.game.attendees = merged.attendees;
-      markDirty();
-      return saveGame().then(function(saved) {
-        if (!saved) return;
-        return request('ack_mobile_attendance', {
-          date: state.game.gameInfo.date,
-          submissionIds: merged.submissionIds
-        }).then(function() {
-          showMessage('모바일 등록 ' + merged.submissionIds.length + '건을 반영했습니다.');
-          return loadGame(state.game.gameInfo.date);
-        });
-      });
+    return request('admin_sync_mobile_attendance', { date: state.game.gameInfo.date }).then(function(data) {
+      applyGameSnapshot(data);
+      updateGameList(data);
+      var merged = data.merged || { added: 0, updated: 0, skipped: 0 };
+      var details = [];
+      if (merged.added > 0) details.push(merged.added + '명 추가');
+      if (merged.updated > 0) details.push(merged.updated + '건 수정');
+      if (merged.skipped > 0) details.push(merged.skipped + '건 제외');
+      showMessage(details.length ? '모바일 출석 ' + details.join(', ') + '했습니다.' : '새 모바일 출석이 없습니다.');
     }).catch(function(error) { showMessage(error.message, true); });
   }
 
@@ -379,12 +397,13 @@
   el('gameDateSelect').addEventListener('change', function() { loadGame(this.value); });
   el('newGameButton').addEventListener('click', newGame);
   el('refreshButton').addEventListener('click', function() { loadGame(state.game.gameInfo.date); });
-  ['gameDate','gameField','gameFee','gameAccount'].forEach(function(id) {
+  ['gameDate','gameField','gameFee'].forEach(function(id) {
     el(id).addEventListener('input', function() { markDirty(); renderSummary(); });
   });
   el('gameFieldSelect').addEventListener('change', handleFieldSelect);
   el('attendeeSearch').addEventListener('input', renderAttendees);
   el('addAttendeeButton').addEventListener('click', function() { openAttendee(); });
+  el('attendeeMinor').addEventListener('change', updateMinorCountField);
   el('attendeeForm').addEventListener('submit', function(event) { event.preventDefault(); saveAttendee(); });
   el('deleteAttendeeButton').addEventListener('click', deleteAttendee);
   document.querySelector('[data-close-dialog]').addEventListener('click', function() { el('attendeeDialog').close(); });
