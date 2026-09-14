@@ -417,6 +417,8 @@
   <script>
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzPgkd98ZVALSGfY5Z9Q0KbRx1gyo2etlioTR6fpFKmyzO6JbFwQh626L4gCHqtaRxt/exec';
     const PROFILE_KEY = 'teamk_mobile_attendance_profile_v1';
+    const PROFILE_COOKIE_KEY = 'teamk_mobile_attendance_name_v1';
+    const PROFILE_COOKIE_PATH = `/${window.location.pathname.split('/').filter(Boolean)[0] || ''}`.replace(/\/?$/, '/');
     const query = new URLSearchParams(window.location.search);
     const attendance = {
       spreadsheetId: query.get('spreadsheetId') || '',
@@ -425,13 +427,34 @@
     };
 
     const form = document.getElementById('attendanceForm');
-    const message = document.getElementById('message');
-    const submitButton = document.getElementById('submitButton');
+    const dom = {
+      message: document.getElementById('message'),
+      submitButton: document.getElementById('submitButton'),
+      name: document.getElementById('name'),
+      minor: document.getElementById('minor'),
+      minorCount: document.getElementById('minorCount'),
+      remember: document.getElementById('remember'),
+      savedProfile: document.getElementById('savedProfile'),
+      gameInfo: document.getElementById('gameInfo'),
+      gameDate: document.getElementById('gameDate'),
+      gameField: document.getElementById('gameField'),
+      gameFee: document.getElementById('gameFee'),
+      gameAccount: document.getElementById('gameAccount'),
+      completionModal: document.getElementById('completionModal'),
+      completionCloseButton: document.getElementById('completionCloseButton'),
+      closeFallback: document.getElementById('closeFallback'),
+      shell: document.querySelector('.shell')
+    };
 
     function showMessage(text, type) {
-      message.textContent = text;
-      message.className = `message ${type} visible`;
-      message.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      dom.message.textContent = text;
+      dom.message.className = `message ${type} visible`;
+      dom.message.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function setSubmitting(isSubmitting) {
+      dom.submitButton.disabled = isSubmitting;
+      dom.submitButton.textContent = isSubmitting ? '등록 중...' : '출석 등록';
     }
 
     function readJsonResponse(response) {
@@ -472,40 +495,104 @@
       }).then(readJsonResponse);
     }
 
-    function readSavedProfile() {
+    function readProfileCookie() {
+      const prefix = `${PROFILE_COOKIE_KEY}=`;
+      const cookie = document.cookie.split('; ').find(item => item.startsWith(prefix));
+      if (!cookie) return '';
       try {
-        const profile = JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null');
-        if (!profile) return;
-        document.getElementById('name').value = profile.name || '';
-        document.getElementById('savedProfile').classList.add('visible');
+        return decodeURIComponent(cookie.slice(prefix.length)).trim();
       } catch (error) {
-        localStorage.removeItem(PROFILE_KEY);
+        return '';
       }
     }
 
+    function writeProfileCookie(name) {
+      const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+      document.cookie = `${PROFILE_COOKIE_KEY}=${encodeURIComponent(name)}; Max-Age=31536000; Path=${PROFILE_COOKIE_PATH}; SameSite=Lax${secure}`;
+    }
+
+    function removeProfileCookie() {
+      document.cookie = `${PROFILE_COOKIE_KEY}=; Max-Age=0; Path=${PROFILE_COOKIE_PATH}; SameSite=Lax`;
+    }
+
+    function readSavedProfile() {
+      let name = '';
+      try {
+        const profile = JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null');
+        name = profile && typeof profile.name === 'string'
+          ? profile.name.trim()
+          : '';
+      } catch (error) {
+        try {
+          localStorage.removeItem(PROFILE_KEY);
+        } catch (storageError) {
+          // Browser privacy settings can disable local storage.
+        }
+      }
+      name = name || readProfileCookie();
+      if (!name) {
+        removeSavedProfile();
+        return;
+      }
+      dom.name.value = name;
+      dom.remember.checked = true;
+      dom.savedProfile.classList.add('visible');
+      try {
+        localStorage.setItem(PROFILE_KEY, JSON.stringify({ name }));
+      } catch (error) {
+        // The cookie remains available when embedded browsers isolate local storage.
+      }
+    }
+
+    function removeSavedProfile() {
+      try {
+        localStorage.removeItem(PROFILE_KEY);
+      } catch (error) {
+        // Browser privacy settings can disable local storage.
+      }
+      removeProfileCookie();
+      dom.savedProfile.classList.remove('visible');
+    }
+
+    function persistRememberedName() {
+      const name = dom.name.value.trim();
+      if (!dom.remember.checked || !name) {
+        removeSavedProfile();
+        return;
+      }
+      try {
+        localStorage.setItem(PROFILE_KEY, JSON.stringify({ name }));
+      } catch (error) {
+        // The cookie is the fallback for embedded browsers.
+      }
+      writeProfileCookie(name);
+      dom.savedProfile.classList.add('visible');
+    }
+
     function clearSavedProfile() {
-      localStorage.removeItem(PROFILE_KEY);
-      document.getElementById('name').value = '';
-      document.getElementById('savedProfile').classList.remove('visible');
+      removeSavedProfile();
+      dom.name.value = '';
+      dom.remember.checked = false;
+      dom.name.focus();
     }
 
     function renderAttendanceInfo(result) {
       if (!result.success) {
         throw new Error(result.error || '출석 정보를 확인할 수 없습니다.');
       }
-      document.getElementById('gameDate').textContent = result.date || attendance.date;
-      document.getElementById('gameField').textContent = result.field || '-';
-      document.getElementById('gameFee').textContent = result.fee ? `${result.fee}원` : '-';
-      document.getElementById('gameAccount').textContent = result.account || '-';
-      document.getElementById('gameInfo').hidden = false;
+      dom.gameDate.textContent = result.date || attendance.date;
+      dom.gameField.textContent = result.field || '-';
+      dom.gameFee.textContent = result.fee ? `${result.fee}원` : '-';
+      dom.gameAccount.textContent = result.account || '-';
+      dom.gameInfo.hidden = false;
       if (!result.open) {
         showMessage(result.message || '모바일 출석 접수가 마감되었습니다.', 'error');
         return;
       }
-      message.className = 'message';
+      dom.message.className = 'message';
       form.hidden = false;
       readSavedProfile();
-      document.getElementById('name').focus();
+      dom.name.focus();
     }
 
     function initialize() {
@@ -519,29 +606,32 @@
     }
 
     document.getElementById('clearProfileButton').addEventListener('click', clearSavedProfile);
-    document.getElementById('minor').addEventListener('change', event => {
-      document.getElementById('minorCount').disabled = !event.target.checked;
+    dom.name.addEventListener('input', persistRememberedName);
+    dom.remember.addEventListener('change', persistRememberedName);
+    window.addEventListener('pagehide', persistRememberedName);
+    dom.minor.addEventListener('change', event => {
+      dom.minorCount.disabled = !event.target.checked;
     });
 
     function closeMobileAttendance() {
-      document.getElementById('completionModal').hidden = true;
-      document.querySelector('.shell').hidden = true;
-      document.getElementById('closeFallback').hidden = false;
+      dom.completionModal.hidden = true;
+      dom.shell.hidden = true;
+      dom.closeFallback.hidden = false;
       window.close();
     }
 
-    document.getElementById('completionCloseButton').addEventListener('click', closeMobileAttendance);
+    dom.completionCloseButton.addEventListener('click', closeMobileAttendance);
 
     form.addEventListener('submit', event => {
       event.preventDefault();
-      const name = document.getElementById('name').value.trim();
+      const name = dom.name.value.trim();
       if (!name) {
         showMessage('성명을 입력해주세요.', 'error');
-        document.getElementById('name').focus();
+        dom.name.focus();
         return;
       }
-      submitButton.disabled = true;
-      submitButton.textContent = '등록 중...';
+      persistRememberedName();
+      setSubmitting(true);
       submitAttendance({
         type: 'submit_mobile_attendance',
         spreadsheetId: attendance.spreadsheetId,
@@ -549,29 +639,20 @@
         token: attendance.token,
         name,
         team: 'Team-K',
-        minorCount: document.getElementById('minor').checked
-          ? parseInt(document.getElementById('minorCount').value, 10)
+        minorCount: dom.minor.checked
+          ? parseInt(dom.minorCount.value, 10)
           : 0,
         note: ''
       }).then(result => {
         if (!result.success) {
           throw new Error(result.error || '출석 등록에 실패했습니다.');
         }
-        if (document.getElementById('remember').checked) {
-          localStorage.setItem(PROFILE_KEY, JSON.stringify({
-            name
-          }));
-        } else {
-          localStorage.removeItem(PROFILE_KEY);
-        }
-        submitButton.disabled = false;
-        submitButton.textContent = '출석 등록';
+        setSubmitting(false);
         showMessage('출석 등록이 완료되었습니다. 운영진 출석부에 곧 반영됩니다.', 'success');
-        document.getElementById('completionModal').hidden = false;
-        document.getElementById('completionCloseButton').focus();
+        dom.completionModal.hidden = false;
+        dom.completionCloseButton.focus();
       }).catch(error => {
-        submitButton.disabled = false;
-        submitButton.textContent = '출석 등록';
+        setSubmitting(false);
         showMessage(error.message || '통신 중 오류가 발생했습니다.', 'error');
       });
     });
