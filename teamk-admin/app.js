@@ -79,8 +79,7 @@
   function formatWon(value) { return Number(value || 0).toLocaleString() + '원'; }
 
   function login(password) {
-    state.spreadsheetId = extractSheetId(el('spreadsheetInput').value);
-    localStorage.setItem('teamk_admin_spreadsheet', el('spreadsheetInput').value);
+    state.spreadsheetId = extractSheetId(DEFAULT_SHEET);
     return api.post({ type: 'admin_login', spreadsheetId: state.spreadsheetId, password: password })
       .then(function(data) {
         state.token = data.sessionToken;
@@ -296,18 +295,25 @@
     var fragment = document.createDocumentFragment();
     state.game.attendees.filter(function(item) {
       return !query || domain.normalizeName(item.name).indexOf(query) >= 0;
-    }).forEach(function(item) {
+    }).forEach(function(item, index) {
       var row = document.createElement('button');
       row.type = 'button';
       row.className = 'attendee';
       var body = document.createElement('div');
+      var nameContainer = document.createElement('div');
+      nameContainer.className = 'attendee-name-container';
+      var idxLabel = document.createElement('span');
+      idxLabel.className = 'attendee-index';
+      idxLabel.textContent = (index + 1);
       var name = document.createElement('strong');
       var meta = document.createElement('span');
       var action = document.createElement('b');
       name.textContent = item.name;
       meta.textContent = (item.paid ? '입금완료' : '미입금') + (item.minor ? ' · 소인' : '') + (item.note ? ' · ' + item.note : '');
       action.textContent = '편집';
-      body.append(name, meta);
+
+      nameContainer.append(idxLabel, name);
+      body.append(nameContainer, meta);
       row.append(body, action);
       row.addEventListener('click', function() { openAttendee(item); });
       fragment.appendChild(row);
@@ -462,6 +468,9 @@
   el('gameDateSelect').addEventListener('change', function() { loadGame(this.value); });
   el('newGameButton').addEventListener('click', openNewGameCalendar);
   el('refreshButton').addEventListener('click', function() { loadGame(state.game.gameInfo.date); });
+  el('statsButton').addEventListener('click', function() {
+    window.location.href = 'statistics.html';
+  });
   el('calendarPreviousMonth').addEventListener('click', function() { moveCalendarMonth(-1); });
   el('calendarNextMonth').addEventListener('click', function() { moveCalendarMonth(1); });
   el('calendarTodayButton').addEventListener('click', function() {
@@ -498,7 +507,6 @@
     if (state.dirty) { event.preventDefault(); event.returnValue = ''; }
   });
 
-  el('spreadsheetInput').value = localStorage.getItem('teamk_admin_spreadsheet') || DEFAULT_SHEET;
   try {
     var saved = JSON.parse(sessionStorage.getItem('teamk_admin_session') || 'null');
     if (saved && saved.token && new Date(saved.expiresAt).getTime() > Date.now()) {

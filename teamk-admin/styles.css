@@ -214,6 +214,26 @@ button {
   display: block;
 }
 
+.attendee-name-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.attendee-index {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: var(--brand);
+  color: white !important;
+  font-size: 0.7rem !important;
+  font-weight: bold;
+  border-radius: 6px;
+  margin-top: 0 !important;
+}
+
 .attendee span {
   margin-top: 3px;
   color: var(--muted);
