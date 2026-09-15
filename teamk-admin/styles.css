@@ -76,6 +76,7 @@ label {
   color: #45606a;
   font-size: .82rem;
   font-weight: 700;
+  min-width: 0;
 }
 
 label[hidden] {
@@ -94,6 +95,7 @@ input, select {
   border: 1px solid #cbdadd;
   background: #fff;
   color: var(--ink);
+  min-width: 0;
 }
 
 button {
