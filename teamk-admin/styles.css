@@ -71,12 +71,15 @@ h2 {
 }
 
 label {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 6px;
   color: #45606a;
   font-size: .82rem;
   font-weight: 700;
-  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 label[hidden] {
@@ -91,10 +94,17 @@ input, select, button {
 
 input, select {
   width: 100%;
+  max-width: 100%;
   padding: 10px 12px;
   border: 1px solid #cbdadd;
   background: #fff;
   color: var(--ink);
+  box-sizing: border-box;
+}
+
+input[type="date"] {
+  -webkit-appearance: none;
+  appearance: none;
   min-width: 0;
 }
 
@@ -188,6 +198,7 @@ button {
   gap: 12px;
   width: 100%;
   max-width: 100%;
+  box-sizing: border-box;
 }
 
 .wide {
@@ -205,7 +216,7 @@ button {
 
 .attendee {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: auto 1fr auto;
   gap: 8px;
   align-items: center;
   padding: 12px;
@@ -215,15 +226,7 @@ button {
 }
 
 .attendee strong, .attendee span {
-  /* removed display: block to allow inline flow */
-}
-
-.attendee-body {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px 12px;
-  width: 100%;
+  /* inline flow */
 }
 
 .attendee-name-container {
@@ -246,9 +249,10 @@ button {
   margin-top: 0 !important;
 }
 
-.attendee span {
+.attendee-meta {
   color: var(--muted);
-  font-size: .85rem;
+  font-size: .75rem;
+  text-align: center;
 }
 
 .button-grid {

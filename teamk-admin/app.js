@@ -299,8 +299,6 @@
       var row = document.createElement('button');
       row.type = 'button';
       row.className = 'attendee';
-      var body = document.createElement('div');
-      body.className = 'attendee-body';
       var nameContainer = document.createElement('div');
       nameContainer.className = 'attendee-name-container';
       var idxLabel = document.createElement('span');
@@ -308,6 +306,7 @@
       idxLabel.textContent = (index + 1);
       var name = document.createElement('strong');
       var meta = document.createElement('span');
+      meta.className = 'attendee-meta';
       var action = document.createElement('b');
       name.textContent = item.name;
       meta.textContent = (item.paid ? '입금완료' : '미입금') + (item.minor ? ' · 소인' : '') + (item.note ? ' · ' + item.note : '');
@@ -315,8 +314,7 @@
       action.textContent = '편집';
 
       nameContainer.append(idxLabel, name);
-      body.append(nameContainer, meta);
-      row.append(body, action);
+      row.append(nameContainer, meta, action);
       row.addEventListener('click', function() { openAttendee(item); });
       fragment.appendChild(row);
     });
