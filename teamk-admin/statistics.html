@@ -43,14 +43,29 @@
       margin-top: 10px;
     }
     .ranking-item {
-      display: grid;
-      grid-template-columns: 30px 1fr 50px;
-      padding: 10px;
       border: 1px solid var(--line);
       border-radius: 8px;
       margin-bottom: 5px;
       background: #fbfdfd;
+      overflow: hidden;
+    }
+    .ranking-item summary {
+      padding: 10px;
+      cursor: pointer;
+    }
+    .ranking-item summary:focus-visible {
+      outline: 3px solid var(--teal);
+      outline-offset: -3px;
+    }
+    .ranking-item[open] summary {
+      background: var(--mint);
+    }
+    .ranking-summary-content {
+      display: inline-grid;
+      grid-template-columns: 30px 1fr 50px;
+      width: calc(100% - 24px);
       align-items: center;
+      vertical-align: middle;
     }
     .ranking-rank {
       font-weight: bold;
@@ -60,6 +75,18 @@
       text-align: right;
       color: var(--muted);
       font-size: 0.9em;
+    }
+    .ranking-dates {
+      margin: 0;
+      padding: 8px 12px 10px 46px;
+      border-top: 1px solid var(--line);
+      list-style: none;
+    }
+    .ranking-dates li {
+      padding: 5px 0;
+      color: var(--muted);
+      font-size: 0.9em;
+      font-variant-numeric: tabular-nums;
     }
   </style>
 </head>

@@ -108,8 +108,11 @@
       // 개인별 집계
       attendees.forEach(function(a) {
         var name = domain.normalizeName(a.name);
-        if (!rankingMap[name]) rankingMap[name] = { name: a.name, count: 0 };
-        rankingMap[name].count++;
+        if (!rankingMap[name]) rankingMap[name] = { name: a.name, count: 0, dates: [] };
+        if (rankingMap[name].dates.indexOf(g.gameInfo.date) === -1) {
+          rankingMap[name].dates.push(g.gameInfo.date);
+          rankingMap[name].count++;
+        }
       });
     });
 
@@ -139,8 +142,12 @@
       return;
     }
     list.forEach(function(item, idx) {
-      var row = document.createElement('div');
+      var row = document.createElement('details');
       row.className = 'ranking-item';
+
+      var summary = document.createElement('summary');
+      var summaryContent = document.createElement('span');
+      summaryContent.className = 'ranking-summary-content';
 
       var rank = document.createElement('span');
       rank.className = 'ranking-rank';
@@ -153,7 +160,17 @@
       count.className = 'ranking-count';
       count.textContent = item.count + '회';
 
-      row.append(rank, name, count);
+      var dates = document.createElement('ul');
+      dates.className = 'ranking-dates';
+      item.dates.slice().sort().reverse().forEach(function(date) {
+        var dateItem = document.createElement('li');
+        dateItem.textContent = date;
+        dates.appendChild(dateItem);
+      });
+
+      summaryContent.append(rank, name, count);
+      summary.appendChild(summaryContent);
+      row.append(summary, dates);
       container.appendChild(row);
     });
   }
