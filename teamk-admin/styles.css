@@ -183,13 +183,15 @@ button {
 }
 
 .form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
+  width: 100%;
+  max-width: 100%;
 }
 
 .wide {
-  grid-column: 1 / -1;
+  width: 100%;
 }
 
 .search {
@@ -213,7 +215,15 @@ button {
 }
 
 .attendee strong, .attendee span {
-  display: block;
+  /* removed display: block to allow inline flow */
+}
+
+.attendee-body {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  width: 100%;
 }
 
 .attendee-name-container {
@@ -237,9 +247,8 @@ button {
 }
 
 .attendee span {
-  margin-top: 3px;
   color: var(--muted);
-  font-size: .78rem;
+  font-size: .85rem;
 }
 
 .button-grid {
@@ -524,12 +533,6 @@ dialog form {
   }
   .toolbar label {
     grid-column: 1 / -1;
-  }
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-  .form-grid .wide {
-    grid-column: auto;
   }
   .topbar {
     padding-top: calc(12px + env(safe-area-inset-top));

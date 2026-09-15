@@ -300,6 +300,7 @@
       row.type = 'button';
       row.className = 'attendee';
       var body = document.createElement('div');
+      body.className = 'attendee-body';
       var nameContainer = document.createElement('div');
       nameContainer.className = 'attendee-name-container';
       var idxLabel = document.createElement('span');
@@ -310,6 +311,7 @@
       var action = document.createElement('b');
       name.textContent = item.name;
       meta.textContent = (item.paid ? '입금완료' : '미입금') + (item.minor ? ' · 소인' : '') + (item.note ? ' · ' + item.note : '');
+      if (!item.paid) meta.style.color = 'var(--danger)';
       action.textContent = '편집';
 
       nameContainer.append(idxLabel, name);
