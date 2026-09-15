@@ -3,7 +3,14 @@
 
   var api = window.TeamKAdminApi;
   var domain = window.TeamKDomain;
-  var state = { spreadsheetId: '', token: '', games: [] };
+  var state = {
+    spreadsheetId: '',
+    token: '',
+    games: [],
+    selectedYear: String(new Date().getFullYear()),
+    monthlyChart: null,
+    fieldChart: null
+  };
 
   function el(id) { return document.getElementById(id); }
 
@@ -11,6 +18,11 @@
     el('backButton').addEventListener('click', function() {
       window.location.href = 'index.html';
     });
+    el('statisticsYear').addEventListener('change', function() {
+      state.selectedYear = this.value;
+      loadStatistics();
+    });
+    renderYearOptions([]);
 
     try {
       var saved = JSON.parse(sessionStorage.getItem('teamk_admin_session') || 'null');
@@ -28,21 +40,49 @@
   }
 
   function loadStatistics() {
+    var requestedYear = state.selectedYear;
+    el('statisticsYear').disabled = true;
+    el('loadingMessage').textContent = requestedYear + '년 통계를 불러오는 중입니다...';
+    el('loadingMessage').hidden = false;
+    el('statsContent').hidden = true;
     api.post({
-      type: 'admin_get_all_games',
+      type: 'admin_get_statistics',
       spreadsheetId: state.spreadsheetId,
-      sessionToken: state.token
+      sessionToken: state.token,
+      year: state.selectedYear
     }).then(function(data) {
-      if (data && data.games) {
-        state.games = data.games;
-        renderStatistics();
-        el('loadingMessage').hidden = true;
-        el('statsContent').hidden = false;
-      }
+      if (requestedYear !== state.selectedYear) return;
+      state.games = data.games || [];
+      renderYearOptions(data.availableYears || []);
+      renderStatistics();
+      el('loadingMessage').hidden = true;
+      el('statsContent').hidden = false;
     }).catch(function(error) {
+      if (requestedYear !== state.selectedYear) return;
       alert('통계 데이터를 불러오는데 실패했습니다: ' + error.message);
       el('loadingMessage').textContent = '데이터 로드 실패';
+    }).finally(function() {
+      if (requestedYear === state.selectedYear) {
+        el('statisticsYear').disabled = false;
+      }
     });
+  }
+
+  function renderYearOptions(years) {
+    var options = {};
+    options[state.selectedYear] = true;
+    years.forEach(function(year) {
+      if (/^\d{4}$/.test(String(year))) options[String(year)] = true;
+    });
+    var fragment = document.createDocumentFragment();
+    Object.keys(options).sort().reverse().forEach(function(year) {
+      var option = document.createElement('option');
+      option.value = year;
+      option.textContent = year + '년';
+      option.selected = year === state.selectedYear;
+      fragment.appendChild(option);
+    });
+    el('statisticsYear').replaceChildren(fragment);
   }
 
   function renderStatistics() {
@@ -91,6 +131,13 @@
 
     var container = el('rankingList');
     container.innerHTML = '';
+    if (!list.length) {
+      var empty = document.createElement('p');
+      empty.className = 'muted';
+      empty.textContent = '해당 연도의 출석 기록이 없습니다.';
+      container.appendChild(empty);
+      return;
+    }
     list.forEach(function(item, idx) {
       var row = document.createElement('div');
       row.className = 'ranking-item';
@@ -116,7 +163,8 @@
     var keys = Object.keys(monthCount).sort();
     var values = keys.map(function(k) { return monthCount[k]; });
 
-    new Chart(ctx, {
+    if (state.monthlyChart) state.monthlyChart.destroy();
+    state.monthlyChart = new Chart(ctx, {
       type: 'line',
       data: {
         labels: keys,
@@ -143,7 +191,8 @@
     var keys = Object.keys(fieldCount).sort(function(a, b) { return fieldCount[b] - fieldCount[a]; });
     var values = keys.map(function(k) { return fieldCount[k]; });
 
-    new Chart(ctx, {
+    if (state.fieldChart) state.fieldChart.destroy();
+    state.fieldChart = new Chart(ctx, {
       type: 'doughnut',
       data: {
         labels: keys,
