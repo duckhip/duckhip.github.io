@@ -44,7 +44,7 @@ body {
   height: 38px;
   border-radius: 8px;
   object-fit: cover;
-  background: #fff;
+  background: transparent;
 }
 
 .main-banner {
