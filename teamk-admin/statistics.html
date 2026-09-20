@@ -25,10 +25,48 @@
       justify-content: space-between;
       gap: 12px;
     }
+    .statistics-summary .game-meta {
+      display: block;
+      margin-top: 6px;
+      color: #aed2d5;
+      font-size: .875rem;
+      line-height: 1.45;
+      white-space: pre-line;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+    }
     .chart-wrapper {
       position: relative;
       height: 250px;
       width: 100%;
+    }
+    .field-average-legend {
+      margin: 12px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .field-average-legend li {
+      display: grid;
+      grid-template-columns: 12px minmax(0, 1fr) auto;
+      align-items: start;
+      gap: 8px;
+      padding: 6px 0;
+      font-size: .875rem;
+    }
+    .field-average-legend .swatch {
+      width: 12px;
+      height: 12px;
+      margin-top: 4px;
+      border-radius: 2px;
+    }
+    .field-average-legend .field-name {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+    .field-average-legend .average-value {
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
     }
     .stat-row {
       display: flex;
@@ -112,10 +150,11 @@
     </div>
 
     <div id="statsContent" hidden>
-      <section class="summary-grid">
+      <section class="summary-grid statistics-summary">
         <article><span>전체 게임</span><strong id="totalGames">0</strong></article>
-        <article><span>총 참석</span><strong id="totalAttendees">0</strong></article>
         <article><span>평균 참석</span><strong id="avgAttendees">0</strong></article>
+        <article><span>최대 참석</span><strong id="maxAttendeesCount">0명</strong><small id="maxAttendeesGame" class="game-meta"></small></article>
+        <article><span>최소 참석</span><strong id="minAttendeesCount">0명</strong><small id="minAttendeesGame" class="game-meta"></small></article>
       </section>
 
       <section class="card chart-card">
@@ -126,10 +165,11 @@
       </section>
 
       <section class="card chart-card">
-        <h2>필드별 참석 현황</h2>
+        <h2>필드별 평균 참석자 수</h2>
         <div class="chart-wrapper">
           <canvas id="fieldChart"></canvas>
         </div>
+        <ul id="fieldAverageLegend" class="field-average-legend" aria-label="필드별 평균 참석자 수"></ul>
       </section>
 
       <section class="card chart-card">

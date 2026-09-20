@@ -89,21 +89,33 @@
     var games = state.games.filter(function(g) { return g.attendees && g.attendees.length > 0; });
     var totalGames = games.length;
     var totalAttendees = 0;
-    var fieldCount = {};
+    var fieldStats = Object.create(null);
     var monthCount = {};
     var rankingMap = {};
+    var maxGame = null;
+    var minGame = null;
 
     games.forEach(function(g) {
       var attendees = g.attendees || [];
-      totalAttendees += attendees.length;
+      var count = attendees.length;
+      var date = g.gameInfo.date;
+      totalAttendees += count;
+      if (!maxGame || count > maxGame.count || (count === maxGame.count && date > maxGame.date)) {
+        maxGame = { count: count, date: date, field: g.gameInfo.field || '미지정' };
+      }
+      if (!minGame || count < minGame.count || (count === minGame.count && date > minGame.date)) {
+        minGame = { count: count, date: date, field: g.gameInfo.field || '미지정' };
+      }
 
       // 필드 집계
       var field = g.gameInfo.field || '미지정';
-      fieldCount[field] = (fieldCount[field] || 0) + attendees.length;
+      if (!fieldStats[field]) fieldStats[field] = { total: 0, games: 0 };
+      fieldStats[field].total += count;
+      fieldStats[field].games++;
 
       // 월별 집계 (YYYY-MM)
-      var month = g.gameInfo.date.substring(0, 7);
-      monthCount[month] = (monthCount[month] || 0) + attendees.length;
+      var month = date.substring(0, 7);
+      monthCount[month] = (monthCount[month] || 0) + count;
 
       // 개인별 집계
       attendees.forEach(function(a) {
@@ -119,12 +131,18 @@
     var avgAttendees = totalGames > 0 ? (totalAttendees / totalGames).toFixed(1) : 0;
 
     el('totalGames').textContent = totalGames + '회';
-    el('totalAttendees').textContent = totalAttendees + '명';
     el('avgAttendees').textContent = avgAttendees + '명';
+    renderExtremeGame('maxAttendees', maxGame);
+    renderExtremeGame('minAttendees', minGame);
 
     renderRanking(rankingMap);
     renderMonthlyChart(monthCount);
-    renderFieldChart(fieldCount);
+    renderFieldChart(fieldStats);
+  }
+
+  function renderExtremeGame(id, game) {
+    el(id + 'Count').textContent = game ? game.count + '명' : '0명';
+    el(id + 'Game').textContent = game ? game.date + '\n' + game.field : '출석 기록 없음';
   }
 
   function renderRanking(rankingMap) {
@@ -203,10 +221,31 @@
     });
   }
 
-  function renderFieldChart(fieldCount) {
+  function renderFieldChart(fieldStats) {
     var ctx = el('fieldChart').getContext('2d');
-    var keys = Object.keys(fieldCount).sort(function(a, b) { return fieldCount[b] - fieldCount[a]; });
-    var values = keys.map(function(k) { return fieldCount[k]; });
+    var keys = Object.keys(fieldStats).sort(function(a, b) {
+      var difference = fieldStats[b].total / fieldStats[b].games - fieldStats[a].total / fieldStats[a].games;
+      return difference || a.localeCompare(b);
+    });
+    var values = keys.map(function(key) { return fieldStats[key].total / fieldStats[key].games; });
+    var colors = ['#1685c5', '#238636', '#f39c12', '#9b59b6', '#e74c3c', '#95a5a6'];
+    var legend = document.createDocumentFragment();
+    keys.forEach(function(key, index) {
+      var item = document.createElement('li');
+      var swatch = document.createElement('span');
+      var fieldName = document.createElement('span');
+      var average = document.createElement('span');
+      swatch.className = 'swatch';
+      swatch.style.backgroundColor = colors[index % colors.length];
+      swatch.setAttribute('aria-hidden', 'true');
+      fieldName.className = 'field-name';
+      fieldName.textContent = key;
+      average.className = 'average-value';
+      average.textContent = values[index].toFixed(1) + '명';
+      item.append(swatch, fieldName, average);
+      legend.appendChild(item);
+    });
+    el('fieldAverageLegend').replaceChildren(legend);
 
     if (state.fieldChart) state.fieldChart.destroy();
     state.fieldChart = new Chart(ctx, {
@@ -215,13 +254,13 @@
         labels: keys,
         datasets: [{
           data: values,
-          backgroundColor: ['#1685c5', '#238636', '#f39c12', '#9b59b6', '#e74c3c', '#95a5a6']
+          backgroundColor: colors
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { position: 'right' } }
+        plugins: { legend: { display: false } }
       }
     });
   }
