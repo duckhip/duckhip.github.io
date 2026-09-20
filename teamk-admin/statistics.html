@@ -147,8 +147,13 @@
       font-variant-numeric: tabular-nums;
     }
     .event-statistics h3 {
-      margin: 18px 0 8px;
-      font-size: .92rem;
+      margin: 22px 0 4px;
+      padding: 10px 12px;
+      border-left: 4px solid var(--teal);
+      background: #edf5f4;
+      color: var(--navy);
+      font-size: .95rem;
+      line-height: 1.4;
     }
     .event-winner-row-stat {
       border-bottom: 1px solid var(--line);
@@ -157,8 +162,25 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 10px 0;
+      padding: 12px 4px;
       cursor: pointer;
+      list-style: none;
+    }
+    .event-winner-row-stat summary::-webkit-details-marker {
+      display: none;
+    }
+    .event-winner-row-stat summary::before {
+      content: '▸';
+      width: 14px;
+      flex: none;
+      color: var(--teal);
+    }
+    .event-winner-row-stat[open] summary::before {
+      content: '▾';
+    }
+    .event-winner-row-stat summary:focus-visible {
+      outline: 2px solid var(--teal);
+      outline-offset: -2px;
     }
     .event-winner-row-stat summary strong {
       flex: 1;
@@ -166,7 +188,9 @@
       overflow-wrap: anywhere;
     }
     .event-winner-row-stat summary span {
-      color: var(--muted);
+      color: var(--teal);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
       white-space: nowrap;
     }
     .event-winner-row-stat ul,
@@ -175,21 +199,49 @@
       padding: 0;
       list-style: none;
     }
-    .event-winner-row-stat li,
-    .event-history li {
-      padding: 7px 0;
-      border-top: 1px solid var(--line);
-      font-size: .85rem;
-      overflow-wrap: anywhere;
+    .event-winner-row-stat ul {
+      margin: 0 4px 8px 22px;
+      padding: 2px 12px;
+      border-left: 2px solid #c5dfda;
+      background: #f7fbfa;
     }
     .event-winner-row-stat li {
-      padding-left: 20px;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 8px;
+      padding: 8px 0;
+      font-size: .84rem;
+      overflow-wrap: anywhere;
+    }
+    .event-winner-row-stat li + li {
+      border-top: 1px solid var(--line);
+    }
+    .event-winner-row-stat time,
+    .event-history time {
       color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+    .event-history li {
+      padding: 12px 4px;
+      border-bottom: 1px solid var(--line);
+      overflow-wrap: anywhere;
+    }
+    .event-history li strong,
+    .event-history li time {
+      display: block;
+    }
+    .event-history li time {
+      margin-bottom: 3px;
+      font-size: .78rem;
+    }
+    .event-history li strong {
+      font-size: .9rem;
     }
     .event-history li span {
       display: block;
-      margin-top: 3px;
+      margin-top: 6px;
       color: var(--muted);
+      font-size: .84rem;
     }
   </style>
 </head>

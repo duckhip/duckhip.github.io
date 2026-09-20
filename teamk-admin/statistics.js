@@ -190,9 +190,14 @@
       count.textContent = item.entries.length + '회';
       summary.append(name, count);
       item.entries.sort(function(a, b) { return b.date.localeCompare(a.date); }).forEach(function(entry) {
-        var date = document.createElement('li');
-        date.textContent = entry.date + ' · ' + entry.eventName;
-        dates.appendChild(date);
+        var detail = document.createElement('li');
+        var date = document.createElement('time');
+        var eventName = document.createElement('span');
+        date.dateTime = entry.date;
+        date.textContent = entry.date;
+        eventName.textContent = entry.eventName;
+        detail.append(date, eventName);
+        dates.appendChild(detail);
       });
       row.append(summary, dates);
       winnerFragment.appendChild(row);
@@ -202,11 +207,14 @@
     var historyFragment = document.createDocumentFragment();
     eventList.forEach(function(item) {
       var row = document.createElement('li');
+      var date = document.createElement('time');
       var title = document.createElement('strong');
       var names = document.createElement('span');
-      title.textContent = item.date + ' · ' + item.name;
-      names.textContent = item.winners.join(', ');
-      row.append(title, names);
+      date.dateTime = item.date;
+      date.textContent = item.date;
+      title.textContent = item.name;
+      names.textContent = '당첨자: ' + item.winners.join(', ');
+      row.append(date, title, names);
       historyFragment.appendChild(row);
     });
     el('eventHistory').replaceChildren(historyFragment);
