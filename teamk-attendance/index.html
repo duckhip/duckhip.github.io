@@ -44,19 +44,12 @@
       text-align: center;
     }
 
-    .brand-mark {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 52px;
-      height: 52px;
-      margin-bottom: 4px;
-      border-radius: 16px;
-      background: linear-gradient(145deg, var(--brand), var(--brand-dark));
-      color: #fff;
-      font-size: 25px;
-      font-weight: 800;
-      box-shadow: 0 10px 24px rgba(13, 101, 152, 0.23);
+    .brand-logo {
+      display: block;
+      width: 68px;
+      height: 68px;
+      margin: 0 auto 6px;
+      object-fit: contain;
     }
 
     h1 {
@@ -389,7 +382,7 @@
 <body>
   <main class="shell">
     <header class="brand">
-      <div class="brand-mark">K</div>
+      <img class="brand-logo" src="./images/team_k_logo.png" alt="Team-K 로고" width="68" height="68">
       <h1>Team-K 모바일 출석</h1>
       <p class="subtitle">스마트폰에서 간편하게 참석 정보를 등록하세요.</p>
     </header>

@@ -205,17 +205,26 @@
     el('eventWinnerRanking').replaceChildren(winnerFragment);
 
     var historyFragment = document.createDocumentFragment();
+    var lastDate = null;
+    var dayEvents;
     eventList.forEach(function(item) {
+      if (item.date !== lastDate) {
+        var day = document.createElement('li');
+        var date = document.createElement('time');
+        dayEvents = document.createElement('ul');
+        date.dateTime = item.date;
+        date.textContent = item.date;
+        day.append(date, dayEvents);
+        historyFragment.appendChild(day);
+        lastDate = item.date;
+      }
       var row = document.createElement('li');
-      var date = document.createElement('time');
       var title = document.createElement('strong');
       var names = document.createElement('span');
-      date.dateTime = item.date;
-      date.textContent = item.date;
       title.textContent = item.name;
       names.textContent = '당첨자: ' + item.winners.join(', ');
-      row.append(date, title, names);
-      historyFragment.appendChild(row);
+      row.append(title, names);
+      dayEvents.appendChild(row);
     });
     el('eventHistory').replaceChildren(historyFragment);
   }
