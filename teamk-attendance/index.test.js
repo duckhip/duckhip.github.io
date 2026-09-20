@@ -7,6 +7,11 @@ const html = fs.readFileSync(__dirname + '/index.html', 'utf8');
 const script = html.match(/<script>([\s\S]*?)<\/script>/)[1]
   .replace(/\n\s*initialize\(\);\s*$/, '');
 
+test('shows the Team-K image in the attendance header', () => {
+  assert.match(html, /<img class="brand-logo" src="\.\/images\/team_k_logo\.png" alt="Team-K 로고"/);
+  assert.ok(fs.existsSync(__dirname + '/images/team_k_logo.png'));
+});
+
 function createElement() {
   const listeners = {};
   return {
