@@ -126,6 +126,49 @@
       font-size: 0.9em;
       font-variant-numeric: tabular-nums;
     }
+    .all-attendees > summary {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 700;
+      list-style: none;
+    }
+    .all-attendees > summary::-webkit-details-marker {
+      display: none;
+    }
+    .all-attendees > summary::before {
+      content: '▸';
+      width: 14px;
+      flex: none;
+      color: var(--teal);
+    }
+    .all-attendees[open] > summary::before {
+      content: '▾';
+    }
+    .all-attendees > summary:focus-visible {
+      outline: 2px solid var(--teal);
+      outline-offset: 3px;
+    }
+    .all-attendees > summary small {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: .84rem;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    .all-attendees .ranking-list {
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+    }
+    .all-attendees .ranking-item {
+      margin: 0;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      border-radius: 0;
+      background: transparent;
+    }
     .event-metrics {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -308,6 +351,11 @@
           <!-- 랭킹 항목이 여기에 추가됩니다 -->
         </div>
       </section>
+
+      <details id="allAttendees" class="card chart-card all-attendees">
+        <summary>모든 출석자 보기 <small id="allAttendeeCount">0명</small></summary>
+        <div id="allAttendeeList" class="ranking-list"></div>
+      </details>
 
       <section class="card chart-card event-statistics">
         <h2>이벤트 통계</h2>

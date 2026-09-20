@@ -8,6 +8,8 @@
     token: '',
     games: [],
     eventWinners: null,
+    allAttendees: [],
+    allAttendeesRendered: false,
     selectedYear: String(new Date().getFullYear()),
     monthlyChart: null,
     fieldChart: null
@@ -23,6 +25,7 @@
       state.selectedYear = this.value;
       loadStatistics();
     });
+    el('allAttendees').addEventListener('toggle', renderAllAttendees);
     renderYearOptions([]);
 
     try {
@@ -237,7 +240,13 @@
   function renderRanking(rankingMap) {
     var list = Object.values(rankingMap).sort(function(a, b) {
       return b.count - a.count || a.name.localeCompare(b.name);
-    }).slice(0, 10);
+    });
+
+    state.allAttendees = list;
+    state.allAttendeesRendered = false;
+    el('allAttendees').open = false;
+    el('allAttendeeCount').textContent = list.length + '명';
+    el('allAttendeeList').innerHTML = '';
 
     var container = el('rankingList');
     container.innerHTML = '';
@@ -248,6 +257,24 @@
       container.appendChild(empty);
       return;
     }
+    appendRankingRows(container, list.slice(0, 10));
+  }
+
+  function renderAllAttendees() {
+    if (!el('allAttendees').open || state.allAttendeesRendered) return;
+    var container = el('allAttendeeList');
+    if (!state.allAttendees.length) {
+      var empty = document.createElement('p');
+      empty.className = 'muted';
+      empty.textContent = '해당 연도의 출석 기록이 없습니다.';
+      container.appendChild(empty);
+    } else {
+      appendRankingRows(container, state.allAttendees);
+    }
+    state.allAttendeesRendered = true;
+  }
+
+  function appendRankingRows(container, list) {
     list.forEach(function(item, idx) {
       var row = document.createElement('details');
       row.className = 'ranking-item';
