@@ -126,6 +126,71 @@
       font-size: 0.9em;
       font-variant-numeric: tabular-nums;
     }
+    .event-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      padding: 4px 0 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .event-metrics span,
+    .event-metrics strong {
+      display: block;
+    }
+    .event-metrics span {
+      color: var(--muted);
+      font-size: .75rem;
+    }
+    .event-metrics strong {
+      margin-top: 4px;
+      font-size: 1.12rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .event-statistics h3 {
+      margin: 18px 0 8px;
+      font-size: .92rem;
+    }
+    .event-winner-row-stat {
+      border-bottom: 1px solid var(--line);
+    }
+    .event-winner-row-stat summary {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 0;
+      cursor: pointer;
+    }
+    .event-winner-row-stat summary strong {
+      flex: 1;
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+    .event-winner-row-stat summary span {
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .event-winner-row-stat ul,
+    .event-history {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .event-winner-row-stat li,
+    .event-history li {
+      padding: 7px 0;
+      border-top: 1px solid var(--line);
+      font-size: .85rem;
+      overflow-wrap: anywhere;
+    }
+    .event-winner-row-stat li {
+      padding-left: 20px;
+      color: var(--muted);
+    }
+    .event-history li span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+    }
   </style>
 </head>
 <body>
@@ -176,6 +241,22 @@
         <h2>출석 랭킹 (Top 10)</h2>
         <div id="rankingList" class="ranking-list">
           <!-- 랭킹 항목이 여기에 추가됩니다 -->
+        </div>
+      </section>
+
+      <section class="card chart-card event-statistics">
+        <h2>이벤트 통계</h2>
+        <p id="eventStatsUnavailable" class="muted" hidden>이벤트 통계를 일시적으로 사용할 수 없습니다.</p>
+        <div id="eventStatsBody">
+          <div class="event-metrics">
+            <div><span>진행 이벤트</span><strong id="eventCount">0건</strong></div>
+            <div><span>당첨 건수</span><strong id="eventWinCount">0건</strong></div>
+            <div><span>당첨자</span><strong id="uniqueWinnerCount">0명</strong></div>
+          </div>
+          <h3>당첨자별 횟수</h3>
+          <div id="eventWinnerRanking"></div>
+          <h3 id="eventHistoryHeading">게임별 행사</h3>
+          <ul id="eventHistory" class="event-history"></ul>
         </div>
       </section>
     </div>

@@ -277,6 +277,39 @@ button {
   text-align: center;
 }
 
+.icon-button {
+  width: 44px;
+  min-width: 44px;
+  padding: 0;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.event-winner-list {
+  display: grid;
+  gap: 10px;
+}
+
+.event-winner-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px;
+  gap: 10px;
+  align-items: end;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.event-winner-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  min-width: 0;
+}
+
+.event-winner-remove {
+  font-size: 1.1rem;
+}
+
 .button-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -571,5 +604,8 @@ dialog form {
   }
   .summary-grid strong {
     font-size: 1rem;
+  }
+  .event-winner-fields {
+    grid-template-columns: 1fr;
   }
 }

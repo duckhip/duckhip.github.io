@@ -8,7 +8,7 @@
     '베이스캠프-양주': '25000',
     '그리드알파-양주': '35000'
   };
-  var state = { spreadsheetId: '', token: '', games: [], game: null, dirty: false };
+  var state = { spreadsheetId: '', token: '', games: [], game: null, dirty: false, eventNames: [], eventsSupported: false, loadedDate: '', hadSavedEvents: false };
   var calendarMonth = new Date();
   var api = window.TeamKAdminApi;
   var domain = window.TeamKDomain;
@@ -99,6 +99,10 @@
     return promise.finally(function() {
       state.token = '';
       state.game = null;
+      state.eventNames = [];
+      state.eventsSupported = false;
+      state.loadedDate = '';
+      state.hadSavedEvents = false;
       sessionStorage.removeItem('teamk_admin_session');
       el('adminView').hidden = true;
       el('logoutButton').hidden = true;
@@ -124,6 +128,11 @@
   }
   function applyGameSnapshot(game) {
     state.game = game;
+    state.eventsSupported = Array.isArray(game.eventWinners);
+    state.eventNames = Array.isArray(game.eventNames) ? game.eventNames : [];
+    if (!state.eventsSupported) state.game.eventWinners = [];
+    state.loadedDate = game.gameInfo.date;
+    state.hadSavedEvents = state.game.eventWinners.length > 0;
     renderGame();
     markSaved();
   }
@@ -147,6 +156,7 @@
       includeSelectedGame: true
     }).then(function(data) {
       state.games = data.games || [];
+      state.eventsSupported = data.eventSupport === true;
       if (data.selectedGame) {
         renderGameOptions(data.selectedGame.gameInfo.date);
         applyGameSnapshot(data.selectedGame);
@@ -226,9 +236,12 @@
     select.value = date;
   }
   function createNewGame(date) {
+    state.loadedDate = '';
+    state.hadSavedEvents = false;
     state.game = {
       gameInfo: { date: date, field: '', fee: '', account: DEFAULT_ACCOUNT, locked: false },
       attendees: [],
+      eventWinners: [],
       revision: 0,
       qr: { effectiveStatus: 'missing', pendingCount: 0 }
     };
@@ -245,6 +258,7 @@
     el('revisionBadge').textContent = 'rev ' + (game.revision || 0);
     el('attendeeSearch').value = '';
     renderAttendees();
+    renderEvents();
     renderSummary();
     renderQr();
   }
@@ -321,6 +335,124 @@
     list.replaceChildren(fragment);
     el('attendeeCount').textContent = state.game.attendees.length + '명';
   }
+  function renderEventNameOptions() {
+    var names = Object.create(null);
+    state.eventNames.concat(state.game.eventWinners.map(function(item) { return item.eventName; }))
+      .forEach(function(name) {
+        var trimmed = String(name || '').trim();
+        if (trimmed) names[domain.normalizeName(trimmed)] = trimmed;
+      });
+    var fragment = document.createDocumentFragment();
+    Object.keys(names).map(function(key) { return names[key]; }).sort().forEach(function(name) {
+      var option = document.createElement('option');
+      option.value = name;
+      fragment.appendChild(option);
+    });
+    el('eventNameOptions').replaceChildren(fragment);
+  }
+  function renderEvents() {
+    var list = el('eventWinnerList');
+    var fragment = document.createDocumentFragment();
+    var winners = state.game.eventWinners || [];
+    el('eventWinnerCount').textContent = winners.length + '명';
+    el('addEventWinnerButton').disabled = !state.eventsSupported;
+    el('eventSupportMessage').hidden = state.eventsSupported;
+    renderEventNameOptions();
+    if (state.eventsSupported && !winners.length) {
+      var empty = document.createElement('p');
+      empty.className = 'muted';
+      empty.textContent = '등록된 당첨자가 없습니다.';
+      fragment.appendChild(empty);
+    }
+    winners.forEach(function(item, index) {
+      var row = document.createElement('div');
+      var fields = document.createElement('div');
+      var eventLabel = document.createElement('label');
+      var eventInput = document.createElement('input');
+      var winnerLabel = document.createElement('label');
+      var winnerSelect = document.createElement('select');
+      var remove = document.createElement('button');
+      row.className = 'event-winner-row';
+      fields.className = 'event-winner-fields';
+      eventInput.value = item.eventName || '';
+      eventInput.maxLength = 80;
+      eventInput.setAttribute('list', 'eventNameOptions');
+      eventInput.setAttribute('autocomplete', 'off');
+      eventInput.addEventListener('input', function() {
+        item.eventName = this.value;
+        renderEventNameOptions();
+        markDirty();
+      });
+      eventLabel.textContent = '행사명';
+      eventLabel.appendChild(eventInput);
+      var placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = '출석자 선택';
+      winnerSelect.appendChild(placeholder);
+      state.game.attendees.forEach(function(attendee) {
+        var option = document.createElement('option');
+        option.value = attendee.name;
+        option.textContent = attendee.name;
+        winnerSelect.appendChild(option);
+      });
+      if (item.winnerName && !state.game.attendees.some(function(attendee) {
+        return domain.normalizeName(attendee.name) === domain.normalizeName(item.winnerName);
+      })) {
+        var previous = document.createElement('option');
+        previous.value = item.winnerName;
+        previous.textContent = item.winnerName + ' (현재 명단 없음)';
+        winnerSelect.appendChild(previous);
+      }
+      winnerSelect.value = item.winnerName || '';
+      winnerSelect.addEventListener('change', function() {
+        item.winnerName = this.value;
+        markDirty();
+      });
+      winnerLabel.textContent = '당첨자';
+      winnerLabel.appendChild(winnerSelect);
+      remove.type = 'button';
+      remove.className = 'danger icon-button event-winner-remove';
+      remove.textContent = '\u00d7';
+      remove.setAttribute('aria-label', (index + 1) + '번째 당첨자 삭제');
+      remove.title = '당첨자 삭제';
+      remove.addEventListener('click', function() {
+        winners.splice(index, 1);
+        renderEvents();
+        markDirty();
+      });
+      fields.append(eventLabel, winnerLabel);
+      row.append(fields, remove);
+      fragment.appendChild(row);
+    });
+    list.replaceChildren(fragment);
+  }
+  function addEventWinner() {
+    if (!state.eventsSupported) return;
+    state.game.eventWinners.push({ eventName: '', winnerName: '' });
+    renderEvents();
+    markDirty();
+    el('eventWinnerList').querySelector('.event-winner-row:last-child input').focus();
+  }
+  function validateEventWinners() {
+    if (!state.eventsSupported) return true;
+    var seen = Object.create(null);
+    for (var index = 0; index < state.game.eventWinners.length; index++) {
+      var item = state.game.eventWinners[index];
+      var eventName = String(item.eventName || '').trim();
+      var winnerName = String(item.winnerName || '').trim();
+      if (!eventName || !winnerName) {
+        showMessage((index + 1) + '번째 당첨자의 행사명과 성명을 입력해주세요.', true);
+        return false;
+      }
+      var key = domain.normalizeName(eventName) + '\u0000' + domain.normalizeName(winnerName);
+      if (seen[key]) {
+        showMessage('같은 행사에 당첨자가 중복 등록되었습니다.', true);
+        return false;
+      }
+      seen[key] = true;
+    }
+    return true;
+  }
   function openAttendee(item) {
     item = item || {};
     var isEdit = item.id != null && String(item.id) !== '';
@@ -352,6 +484,14 @@
       note: el('attendeeNote').value.trim()
     };
     if (id) {
+      var previous = state.game.attendees.find(function(item) { return domain.sameId(item.id, id); });
+      if (previous && domain.normalizeName(previous.name) !== domain.normalizeName(name)) {
+        state.game.eventWinners.forEach(function(winner) {
+          if (domain.normalizeName(winner.winnerName) === domain.normalizeName(previous.name)) {
+            winner.winnerName = name;
+          }
+        });
+      }
       state.game.attendees = domain.upsertAttendee(state.game.attendees, input);
       showMessage('출석자 정보를 수정했습니다.');
     } else {
@@ -363,6 +503,7 @@
     el('attendeeDialog').close();
     el('attendeeSearch').value = '';
     renderAttendees();
+    renderEvents();
     renderSummary();
     markDirty();
   }
@@ -376,6 +517,7 @@
     state.game.attendees = domain.deleteAttendee(state.game.attendees, id);
     el('attendeeDialog').close();
     renderAttendees();
+    renderEvents();
     renderSummary();
     markDirty();
   }
@@ -385,15 +527,27 @@
       showMessage('게임일자, 필드명, 게임비를 입력해주세요.', true);
       return Promise.resolve(false);
     }
+    if (state.hadSavedEvents && state.loadedDate !== state.game.gameInfo.date) {
+      showMessage('이벤트가 기록된 게임은 날짜를 변경할 수 없습니다. 이벤트를 삭제해 저장한 뒤 다시 변경해주세요.', true);
+      return Promise.resolve(false);
+    }
+    if (!validateEventWinners()) return Promise.resolve(false);
     setBusy(el('saveButton'), true, '서버 저장');
-    return request('admin_save_game', {
+    var payload = {
       date: state.game.gameInfo.date,
+      sourceDate: state.loadedDate,
       expectedRevision: state.game.revision || 0,
       gameInfo: state.game.gameInfo,
       attendees: state.game.attendees
-    }).then(function(data) {
+    };
+    if (state.eventsSupported) payload.eventWinners = state.game.eventWinners;
+    return request('admin_save_game', payload).then(function(data) {
       applyGameSnapshot(data);
       updateGameList(data);
+      if (payload.eventWinners && !Array.isArray(data.eventWinners)) {
+        showMessage('게임은 저장됐지만 이벤트는 반영되지 않았습니다. 다시 확인해주세요.', true);
+        return false;
+      }
       showMessage('서버에 저장했습니다.');
       return true;
     }).catch(function(error) {
@@ -491,6 +645,7 @@
   el('gameFieldSelect').addEventListener('change', handleFieldSelect);
   el('attendeeSearch').addEventListener('input', renderAttendees);
   el('addAttendeeButton').addEventListener('click', function() { openAttendee(); });
+  el('addEventWinnerButton').addEventListener('click', addEventWinner);
   el('attendeeMinor').addEventListener('change', updateMinorCountField);
   el('attendeeForm').addEventListener('submit', function(event) { event.preventDefault(); saveAttendee(); });
   el('deleteAttendeeButton').addEventListener('click', deleteAttendee);

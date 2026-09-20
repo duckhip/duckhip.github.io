@@ -71,6 +71,16 @@
       </section>
 
       <section class="card">
+        <div class="section-head">
+          <h2>이벤트 <small id="eventWinnerCount"></small></h2>
+          <button id="addEventWinnerButton" class="secondary icon-button" type="button" aria-label="당첨자 추가" title="당첨자 추가">+</button>
+        </div>
+        <p id="eventSupportMessage" class="muted" hidden>이벤트 기록을 일시적으로 사용할 수 없습니다.</p>
+        <div id="eventWinnerList" class="event-winner-list"></div>
+        <datalist id="eventNameOptions"></datalist>
+      </section>
+
+      <section class="card">
         <div class="section-head"><h2>QR 출석 관리</h2><span id="qrStatus" class="badge">미설정</span></div>
         <p id="qrMeta" class="muted">선택한 날짜의 QR 상태를 확인하세요.</p>
         <div class="button-grid">

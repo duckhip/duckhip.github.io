@@ -7,6 +7,7 @@
     spreadsheetId: '',
     token: '',
     games: [],
+    eventWinners: null,
     selectedYear: String(new Date().getFullYear()),
     monthlyChart: null,
     fieldChart: null
@@ -53,6 +54,7 @@
     }).then(function(data) {
       if (requestedYear !== state.selectedYear) return;
       state.games = data.games || [];
+      state.eventWinners = Array.isArray(data.eventWinners) ? data.eventWinners : null;
       renderYearOptions(data.availableYears || []);
       renderStatistics();
       el('loadingMessage').hidden = true;
@@ -138,6 +140,76 @@
     renderRanking(rankingMap);
     renderMonthlyChart(monthCount);
     renderFieldChart(fieldStats);
+    renderEventStatistics();
+  }
+
+  function renderEventStatistics() {
+    var supported = Array.isArray(state.eventWinners);
+    el('eventStatsUnavailable').hidden = supported;
+    el('eventStatsBody').hidden = !supported;
+    if (!supported) return;
+
+    var events = Object.create(null);
+    var winners = Object.create(null);
+    state.eventWinners.forEach(function(item) {
+      var eventName = String(item.eventName || '').trim();
+      var winnerName = String(item.winnerName || '').trim();
+      if (!eventName || !winnerName) return;
+      var eventKey = item.date + '\u0000' + domain.normalizeName(eventName);
+      if (!events[eventKey]) events[eventKey] = { date: item.date, name: eventName, winners: [] };
+      events[eventKey].winners.push(winnerName);
+      var winnerKey = domain.normalizeName(winnerName);
+      if (!winners[winnerKey]) winners[winnerKey] = { name: winnerName, entries: [] };
+      winners[winnerKey].entries.push({ date: item.date, eventName: eventName });
+    });
+
+    var eventList = Object.keys(events).map(function(key) { return events[key]; })
+      .sort(function(a, b) { return b.date.localeCompare(a.date) || a.name.localeCompare(b.name); });
+    var winnerList = Object.keys(winners).map(function(key) { return winners[key]; })
+      .sort(function(a, b) { return b.entries.length - a.entries.length || a.name.localeCompare(b.name); });
+    el('eventCount').textContent = eventList.length + '건';
+    el('eventWinCount').textContent = state.eventWinners.length + '건';
+    el('uniqueWinnerCount').textContent = winnerList.length + '명';
+    el('eventHistoryHeading').hidden = eventList.length === 0;
+
+    var winnerFragment = document.createDocumentFragment();
+    if (!winnerList.length) {
+      var empty = document.createElement('p');
+      empty.className = 'muted';
+      empty.textContent = '해당 연도의 당첨 기록이 없습니다.';
+      winnerFragment.appendChild(empty);
+    }
+    winnerList.forEach(function(item) {
+      var row = document.createElement('details');
+      var summary = document.createElement('summary');
+      var name = document.createElement('strong');
+      var count = document.createElement('span');
+      var dates = document.createElement('ul');
+      row.className = 'event-winner-row-stat';
+      name.textContent = item.name;
+      count.textContent = item.entries.length + '회';
+      summary.append(name, count);
+      item.entries.sort(function(a, b) { return b.date.localeCompare(a.date); }).forEach(function(entry) {
+        var date = document.createElement('li');
+        date.textContent = entry.date + ' · ' + entry.eventName;
+        dates.appendChild(date);
+      });
+      row.append(summary, dates);
+      winnerFragment.appendChild(row);
+    });
+    el('eventWinnerRanking').replaceChildren(winnerFragment);
+
+    var historyFragment = document.createDocumentFragment();
+    eventList.forEach(function(item) {
+      var row = document.createElement('li');
+      var title = document.createElement('strong');
+      var names = document.createElement('span');
+      title.textContent = item.date + ' · ' + item.name;
+      names.textContent = item.winners.join(', ');
+      row.append(title, names);
+      historyFragment.appendChild(row);
+    });
+    el('eventHistory').replaceChildren(historyFragment);
   }
 
   function renderExtremeGame(id, game) {
