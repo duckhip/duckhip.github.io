@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>완료 팝업 미리보기</title>
+  <style>
+    :root {
+      --ink: #183042; --muted: #667784; --brand: #1685c5; --brand-dark: #0d6598; --canvas: #edf5f9;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; padding: 10px;
+      background: radial-gradient(circle at top right,rgba(22,133,197,.18),transparent 34%), linear-gradient(180deg,#f8fcff,var(--canvas));
+      font-family: "Apple SD Gothic Neo","Noto Sans KR",sans-serif; color: var(--ink);
+    }
+    .shell { width: min(100%,520px); margin: 0 auto; }
+    .brand { margin:2px 0 8px; text-align:center; }
+    .brand-logo { display:block; width:68px; height:68px; margin:0 auto 6px; object-fit:contain; }
+    h1 { margin:0; font-size:1.45rem; letter-spacing:-.04em; }
+    .subtitle { margin:3px 0 0; color:var(--muted); font-size:.9rem; }
+    .card { overflow:hidden; border:1px solid rgba(217,226,232,.9); border-radius:20px; background:rgba(255,255,255,.96); box-shadow:0 18px 45px rgba(42,75,94,.12); padding:20px; text-align:center; color:var(--muted); font-size:.9rem; }
+    .completion-modal { position:fixed; inset:0; z-index:1000; display:grid; place-items:center; padding:20px; background:rgba(14,30,44,.65); backdrop-filter:blur(4px); }
+    .completion-modal[hidden] { display:none; }
+    .completion-panel { width:min(100%,360px); padding:28px 24px 24px; border-radius:22px; background:#fff; text-align:center; box-shadow:0 28px 70px rgba(14,30,44,.30); animation:panel-pop .28s cubic-bezier(.34,1.56,.64,1); }
+    @keyframes panel-pop { from{opacity:0;transform:scale(.88) translateY(12px)} to{opacity:1;transform:scale(1) translateY(0)} }
+    .completion-logo-wrap { position:relative; display:inline-flex; align-items:center; justify-content:center; width:76px; height:76px; margin-bottom:14px; }
+    .completion-logo-wrap::before { content:''; position:absolute; inset:-4px; border-radius:50%; background:conic-gradient(var(--brand),#63d4ff,var(--brand)); animation:spin-ring 3s linear infinite; opacity:.55; }
+    @keyframes spin-ring { to{transform:rotate(360deg)} }
+    .completion-logo-wrap::after { content:''; position:absolute; inset:2px; border-radius:50%; background:#fff; }
+    .completion-logo { position:relative; z-index:1; width:60px; height:60px; object-fit:contain; }
+    .completion-panel h2 { margin:0 0 6px; font-size:1.25rem; font-weight:800; color:var(--ink); letter-spacing:-.03em; }
+    .completion-name { color:var(--brand-dark); }
+    .completion-panel .completion-sub { margin:0 0 20px; color:var(--muted); font-size:.92rem; line-height:1.6; }
+    .completion-panel .completion-sub strong { color:var(--brand-dark); font-weight:800; }
+    button { width:100%; min-height:48px; border:0; border-radius:12px; background:linear-gradient(135deg,var(--brand),var(--brand-dark)); color:#fff; font:inherit; font-size:1rem; font-weight:800; cursor:pointer; box-shadow:0 9px 20px rgba(13,101,152,.2); }
+    .preview-controls { position:fixed; bottom:16px; left:50%; transform:translateX(-50%); z-index:2000; display:flex; gap:8px; }
+    .preview-controls button { width:auto; min-height:36px; padding:0 16px; font-size:.85rem; border-radius:20px; }
+    .btn-hide { background:linear-gradient(135deg,#667784,#405060); }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="brand">
+      <img class="brand-logo" src="./images/team_k_logo.png" alt="Team-K 로고" width="68" height="68">
+      <h1>Team-K 모바일 출석</h1>
+      <p class="subtitle">스마트폰에서 간편하게 참석 정보를 등록하세요.</p>
+    </header>
+    <section class="card"><p>완료 팝업 미리보기 전용 페이지입니다.</p></section>
+  </main>
+  <div id="completionModal" class="completion-modal" role="dialog" aria-modal="true">
+    <div class="completion-panel">
+      <div class="completion-logo-wrap">
+        <img class="completion-logo" src="./images/team_k_logo.png" alt="Team-K 로고" width="60" height="60">
+      </div>
+      <h2><span class="completion-name">홍길동</span>님 출석완료!</h2>
+      <p class="completion-sub">올해 <strong>7</strong>번째 게임 참석하였어요.<br>더 자주 만나요.</p>
+      <button onclick="document.getElementById('completionModal').hidden=true">닫기</button>
+    </div>
+  </div>
+  <div class="preview-controls">
+    <button onclick="document.getElementById('completionModal').hidden=false">팝업 열기</button>
+    <button class="btn-hide" onclick="document.getElementById('completionModal').hidden=true">팝업 닫기</button>
+  </div>
+</body>
+</html>

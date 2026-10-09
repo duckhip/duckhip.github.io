@@ -74,7 +74,7 @@
 
     .game-info {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 1px;
       background: var(--line);
       border-bottom: 1px solid var(--line);
@@ -87,7 +87,38 @@
     }
 
     .game-item.account {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
       white-space: nowrap;
+    }
+
+    .game-item.account .account-info {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .copy-btn {
+      flex: 0 0 auto;
+      margin-top: 0;
+      margin-left: 10px;
+      width: 32px;
+      height: 32px;
+      min-height: 0;
+      padding: 0;
+      border-radius: 8px;
+      background: rgba(22, 133, 197, 0.1);
+      color: var(--brand);
+      box-shadow: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .copy-btn svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
     }
 
     .label {
@@ -479,8 +510,13 @@
           <span id="gameFee" class="value"></span>
         </div>
         <div class="game-item account">
-          <span class="label">입금계좌</span>
-          <span id="gameAccount" class="value"></span>
+          <div class="account-info">
+            <span class="label">입금계좌</span>
+            <span id="gameAccount" class="value"></span>
+          </div>
+          <button type="button" class="copy-btn" id="copyAccountBtn" aria-label="계좌번호 복사" title="계좌번호 복사">
+            <svg viewBox="0 0 24 24"><path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+          </button>
         </div>
       </div>
 
@@ -760,6 +796,22 @@
     }
 
     dom.completionCloseButton.addEventListener('click', closeMobileAttendance);
+
+    document.getElementById('copyAccountBtn').addEventListener('click', () => {
+      const accountText = dom.gameAccount.textContent || '';
+      const match = accountText.match(/[\d-]+/g);
+      let accNum = '';
+      if (match) {
+        accNum = match.reduce((a, b) => a.length > b.length ? a : b, '');
+      }
+      if (accNum) {
+        navigator.clipboard.writeText(accNum).then(() => {
+          showMessage('계좌번호가 복사되었습니다.', 'success');
+        }).catch(() => {
+          showMessage('복사 기능을 지원하지 않는 환경입니다.', 'error');
+        });
+      }
+    });
 
     form.addEventListener('submit', event => {
       event.preventDefault();
