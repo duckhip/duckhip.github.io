@@ -40,15 +40,16 @@
     }
 
     .brand {
-      margin: 2px 0 8px;
-      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 10px 0 16px;
     }
 
     .brand-logo {
-      display: block;
-      width: 68px;
-      height: 68px;
-      margin: 0 auto 6px;
+      width: 1.45rem;
+      height: 1.45rem;
       object-fit: contain;
     }
 
@@ -56,12 +57,6 @@
       margin: 0;
       font-size: 1.45rem;
       letter-spacing: -0.04em;
-    }
-
-    .subtitle {
-      margin: 3px 0 0;
-      color: var(--muted);
-      font-size: 0.9rem;
     }
 
     .card {
@@ -145,11 +140,23 @@
       margin-bottom: 10px;
     }
 
+    .field.inline {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
     .field label {
       display: block;
       margin-bottom: 7px;
       font-size: 0.9rem;
       font-weight: 700;
+    }
+
+    .field.inline label {
+      margin-bottom: 0;
+      white-space: nowrap;
+      flex: 0 0 auto;
     }
 
     .required {
@@ -168,6 +175,11 @@
       font: inherit;
       font-size: 16px;
       outline: none;
+    }
+
+    .field.inline input[type="text"] {
+      flex: 1 1 auto;
+      min-width: 0;
     }
 
     input[type="text"]:focus {
@@ -257,16 +269,33 @@
       color: var(--brand-dark);
     }
 
+    .profile-settings {
+      margin: 0 14px 14px;
+      padding: 14px;
+      border: 1px solid #cfe1eb;
+      border-radius: 12px;
+      background: #f4fafc;
+    }
+
+    .profile-settings .check-row {
+      margin: 0 0 6px 0;
+    }
+
+    .profile-settings .privacy {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.76rem;
+      line-height: 1.4;
+    }
+
     .saved-profile {
       display: none;
       align-items: center;
       justify-content: space-between;
       gap: 10px;
-      margin: 0 18px 18px;
-      padding: 12px;
-      border: 1px solid #cfe1eb;
-      border-radius: 11px;
-      background: #f4fafc;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed #cfe1eb;
       color: #46606f;
       font-size: 0.84rem;
     }
@@ -285,13 +314,6 @@
       color: #506674;
       font-size: 0.78rem;
       box-shadow: none;
-    }
-
-    .privacy {
-      margin: 9px 2px 0;
-      color: var(--muted);
-      font-size: 0.76rem;
-      line-height: 1.5;
     }
 
     [hidden] {
@@ -479,9 +501,8 @@
 <body>
   <main class="shell">
     <header class="brand">
-      <img class="brand-logo" src="./images/team_k_logo.png" alt="Team-K 로고" width="68" height="68">
+      <img class="brand-logo" src="./images/team_k_logo.png" alt="Team-K 로고">
       <h1>Team-K 모바일 출석</h1>
-      <p class="subtitle">스마트폰에서 간편하게 참석 정보를 등록하세요.</p>
     </header>
 
     <section class="card" aria-live="polite">
@@ -521,9 +542,9 @@
       </div>
 
       <form id="attendanceForm" hidden>
-        <div class="field">
+        <div class="field inline">
           <label for="name">성명 <span class="required">(필수)</span></label>
-          <input id="name" type="text" maxlength="30" autocomplete="name" placeholder="이름을 입력하세요" required>
+          <input id="name" type="text" maxlength="30" autocomplete="name" placeholder="이름 입력" required>
         </div>
         <label class="check-row minor-row">
           <input id="minor" type="checkbox">
@@ -536,17 +557,19 @@
             <option value="5">5명</option>
           </select>
         </label>
+        <button id="submitButton" type="submit">출석 등록</button>
+      </form>
+
+      <div class="profile-settings" id="profileSettings" hidden>
         <label class="check-row">
           <input id="remember" type="checkbox" checked>
           <span>다음 출석 때 이름을 자동으로 입력합니다.</span>
         </label>
-        <button id="submitButton" type="submit">출석 등록</button>
-        <p class="privacy">저장 동의를 선택하면 이름이 이 스마트폰의 브라우저에만 저장됩니다. 공용 기기에서는 선택을 해제하세요.</p>
-      </form>
-
-      <div id="savedProfile" class="saved-profile">
-        <span>저장된 사용자 정보가 적용되었습니다.</span>
-        <button id="clearProfileButton" type="button">저장정보 삭제</button>
+        <p class="privacy">저장 동의 시 이름이 브라우저에만 저장됩니다. 공용 기기에서는 선택을 해제하세요.</p>
+        <div id="savedProfile" class="saved-profile">
+          <span>저장된 사용자 정보가 적용되었습니다.</span>
+          <button id="clearProfileButton" type="button">저장정보 삭제</button>
+        </div>
       </div>
     </section>
   </main>
@@ -749,6 +772,7 @@
       dom.message.className = 'message';
       form.classList.add('form-ready');
       form.hidden = false;
+      document.getElementById('profileSettings').hidden = false;
       readSavedProfile();
       dom.name.focus();
     }
