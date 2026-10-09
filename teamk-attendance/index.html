@@ -274,7 +274,8 @@
       display: grid;
       place-items: center;
       padding: 20px;
-      background: rgba(24, 48, 66, 0.52);
+      background: rgba(14, 30, 44, 0.65);
+      backdrop-filter: blur(4px);
     }
 
     .completion-modal[hidden] {
@@ -283,22 +284,87 @@
 
     .completion-panel {
       width: min(100%, 360px);
-      padding: 24px;
-      border-radius: 18px;
+      padding: 28px 24px 24px;
+      border-radius: 22px;
       background: #fff;
       text-align: center;
-      box-shadow: 0 24px 60px rgba(24, 48, 66, 0.25);
+      box-shadow: 0 28px 70px rgba(14, 30, 44, 0.30);
+      animation: panel-pop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes panel-pop {
+      from { opacity: 0; transform: scale(0.88) translateY(12px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .completion-logo-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 76px;
+      height: 76px;
+      margin-bottom: 14px;
+    }
+
+    .completion-logo-wrap::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      background: conic-gradient(var(--brand), #63d4ff, var(--brand));
+      animation: spin-ring 3s linear infinite;
+      opacity: 0.55;
+    }
+
+    @keyframes spin-ring {
+      to { transform: rotate(360deg); }
+    }
+
+    .completion-logo-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    .completion-logo {
+      position: relative;
+      z-index: 1;
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+    }
+
+    .completion-check {
+      display: block;
+      margin: 0 auto 4px;
+      font-size: 1.6rem;
     }
 
     .completion-panel h2 {
-      margin: 0 0 9px;
-      font-size: 1.2rem;
+      margin: 0 0 6px;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -0.03em;
     }
 
-    .completion-panel p {
-      margin: 0 0 18px;
+    .completion-name {
+      color: var(--brand-dark);
+    }
+
+    .completion-panel .completion-sub {
+      margin: 0 0 20px;
       color: var(--muted);
-      line-height: 1.55;
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    .completion-panel .completion-sub strong {
+      color: var(--brand-dark);
+      font-weight: 800;
     }
 
     .close-fallback {
@@ -450,8 +516,11 @@
   </main>
   <div id="completionModal" class="completion-modal" role="dialog" aria-modal="true" aria-labelledby="completionTitle" hidden>
     <div class="completion-panel">
-      <h2 id="completionTitle">출석 등록 완료</h2>
-      <p>출석 등록이 완료되었습니다.<br>내용 수정을 원하시면, 다시 QR로 접속하세요.</p>
+      <div class="completion-logo-wrap">
+        <img class="completion-logo" src="./images/team_k_logo.png" alt="Team-K 로고" width="60" height="60">
+      </div>
+      <h2 id="completionTitle"><span id="completionName" class="completion-name"></span>님 출석완료!</h2>
+      <p id="completionSub" class="completion-sub">올해 <strong id="completionCount">-</strong>번째 게임 참석하였어요.<br>더 자주 만나요.</p>
       <button id="completionCloseButton" type="button">닫기</button>
     </div>
   </div>
@@ -719,6 +788,17 @@
         }
         setSubmitting(false);
         showMessage('출석 등록이 완료되었습니다. 운영진 출석부에 곧 반영됩니다.', 'success');
+        // 완료 팝업: 이름 및 올해 참석 횟수 표시
+        document.getElementById('completionName').textContent = name;
+        const yearlyCount = result.yearlyCount;
+        const countEl = document.getElementById('completionCount');
+        const subEl = document.getElementById('completionSub');
+        if (yearlyCount && yearlyCount > 0) {
+          countEl.textContent = yearlyCount;
+          subEl.hidden = false;
+        } else {
+          subEl.hidden = true;
+        }
         dom.completionModal.hidden = false;
         dom.completionCloseButton.focus();
       }).catch(error => {
