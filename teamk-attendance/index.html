@@ -420,6 +420,13 @@
       font-weight: 800;
     }
 
+    .completion-panel .completion-phrase {
+      display: block;
+      margin-top: 6px;
+      color: var(--brand);
+      font-weight: 700;
+    }
+
     .close-fallback {
       width: min(100%, 520px);
       margin: 0 auto;
@@ -579,7 +586,10 @@
         <img class="completion-logo" src="./images/team_k_logo.png" alt="Team-K 로고" width="60" height="60">
       </div>
       <h2 id="completionTitle"><span id="completionName" class="completion-name"></span>님 출석완료!</h2>
-      <p id="completionSub" class="completion-sub">올해 <strong id="completionCount">-</strong>번째 게임 참석하였어요.<br>더 자주 만나요.</p>
+      <div id="completionSub" class="completion-sub">
+        <span id="completionCountText">올해 <strong id="completionCount">-</strong>번째 게임 참석!</span>
+        <span id="completionPhrase" class="completion-phrase"></span>
+      </div>
       <button id="completionCloseButton" type="button">닫기</button>
     </div>
   </div>
@@ -868,13 +878,29 @@
         document.getElementById('completionName').textContent = name;
         const yearlyCount = result.yearlyCount;
         const countEl = document.getElementById('completionCount');
+        const countTextEl = document.getElementById('completionCountText');
         const subEl = document.getElementById('completionSub');
+        const phraseEl = document.getElementById('completionPhrase');
+        
+        const phrases = [
+          "오늘도 비비탄 샤워!", "탄창은 가득, 걱정은 빈칸!", "출석 완료, 엄폐 시작!", "오늘의 MVP는 나야 나!",
+          "명중보다 중요한 출석!", "조준은 신중, 돌격은 신속!", "히트는 크게, 변명은 작게!", "탄은 피해도 출석은 못 피해!",
+          "오늘도 안전하게 탕탕!", "고글 김서림 없는 쾌적한 하루!", "팀킬 조심, 피아 식별 철저!", "내 체력보다 긴 게임!",
+          "탄창 비우고 스트레스도 비우고!", "오늘은 내가 돌격대장!", "맞기 전에 쏘는 게 국룰!", "작전명: 신나게 놀기!",
+          "게임 끝나면 다 같은 편!", "히트 외쳐도 재미는 계속!", "오늘도 전술적 산책!", "내 위치는 비밀, 출석은 공개!",
+          "한 발의 명중, 백 번의 웃음!", "장비 뽐뿌는 끝이 없다!", "리스폰하고 다시 가자!", "총은 가볍게, 매너는 묵직하게!",
+          "조준선 너머에 주말이!", "오늘도 풀장비, 풀웃음!", "잘 맞히고 잘 인정하기!", "승패보다 중요한 건 뒤풀이!",
+          "존버는 승리한다, 아마도!", "뛰지 말고 안전하게!", "정확한 홉업 세팅, 완벽한 사거리!", "다음 게임도 함께 탕탕!"
+        ];
+        phraseEl.textContent = phrases[Math.floor(Math.random() * phrases.length)];
+
         if (yearlyCount && yearlyCount > 0) {
           countEl.textContent = yearlyCount;
-          subEl.hidden = false;
+          countTextEl.hidden = false;
         } else {
-          subEl.hidden = true;
+          countTextEl.hidden = true;
         }
+        subEl.hidden = false;
         dom.completionModal.hidden = false;
         dom.completionCloseButton.focus();
       }).catch(error => {
