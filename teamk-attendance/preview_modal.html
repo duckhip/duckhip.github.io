@@ -32,7 +32,10 @@
     .completion-panel h2 { margin:0 0 6px; font-size:1.25rem; font-weight:800; color:var(--ink); letter-spacing:-.03em; }
     .completion-name { color:var(--brand-dark); }
     .completion-panel .completion-sub { margin:0 0 20px; color:var(--muted); font-size:.92rem; line-height:1.6; }
-    .completion-panel .completion-sub strong { color:var(--brand-dark); font-weight:800; }
+    .completion-panel .completion-sub strong { display: inline-block; color: var(--brand-dark); font-weight: 800; }
+    .count-spinner { display: inline-block; width: 14px; height: 14px; vertical-align: -2px; margin: 0 4px; border: 2px solid #d9e6ed; border-top-color: var(--brand); border-radius: 50%; animation: count-spin 0.75s linear infinite; box-sizing: border-box; }
+    @keyframes count-spin { to { transform: rotate(360deg); } }
+    .completion-phrase { display: block; margin-top: 6px; color: var(--brand); font-weight: 700; }
     button { width:100%; min-height:48px; border:0; border-radius:12px; background:linear-gradient(135deg,var(--brand),var(--brand-dark)); color:#fff; font:inherit; font-size:1rem; font-weight:800; cursor:pointer; box-shadow:0 9px 20px rgba(13,101,152,.2); }
     .preview-controls { position:fixed; bottom:16px; left:50%; transform:translateX(-50%); z-index:2000; display:flex; gap:8px; }
     .preview-controls button { width:auto; min-height:36px; padding:0 16px; font-size:.85rem; border-radius:20px; }
@@ -54,7 +57,10 @@
         <img class="completion-logo" src="./images/team_k_logo.png" alt="Team-K 로고" width="60" height="60">
       </div>
       <h2><span class="completion-name">홍길동</span>님 출석완료!</h2>
-      <p class="completion-sub">올해 <strong>7</strong>번째 게임 참석하였어요.<br>더 자주 만나요.</p>
+      <div class="completion-sub">
+        <span>올해 <span class="count-spinner"></span>번째 게임 참석!</span>
+        <span class="completion-phrase">탄창은 가득, 걱정은 빈칸!</span>
+      </div>
       <button onclick="document.getElementById('completionModal').hidden=true">닫기</button>
     </div>
   </div>

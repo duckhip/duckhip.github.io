@@ -420,8 +420,39 @@
     }
 
     .completion-panel .completion-sub strong {
+      display: inline-block;
       color: var(--brand-dark);
       font-weight: 800;
+    }
+
+    .count-spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      vertical-align: -2px;
+      margin: 0 4px;
+      border: 2px solid #d9e6ed;
+      border-top-color: var(--brand);
+      border-radius: 50%;
+      animation: count-spin 0.75s linear infinite;
+      box-sizing: border-box;
+    }
+
+    .count-spinner[hidden] {
+      display: none !important;
+    }
+
+    .count-pop {
+      animation: count-pop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes count-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes count-pop {
+      from { opacity: 0; transform: scale(0.6); }
+      to   { opacity: 1; transform: scale(1); }
     }
 
     .completion-panel .completion-phrase {
@@ -591,7 +622,7 @@
       </div>
       <h2 id="completionTitle"><span id="completionName" class="completion-name"></span>님 출석완료!</h2>
       <div id="completionSub" class="completion-sub">
-        <span id="completionCountText">올해 <strong id="completionCount">-</strong>번째 게임 참석!</span>
+        <span id="completionCountText">올해 <span id="completionCountSpinner" class="count-spinner" aria-label="조회 중"></span><strong id="completionCount" hidden>-</strong>번째 게임 참석!</span>
         <span id="completionPhrase" class="completion-phrase"></span>
       </div>
       <button id="completionCloseButton" type="button">닫기</button>
@@ -888,9 +919,10 @@
         setSubmitting(false);
         showMessage('출석 등록이 완료되었습니다. 운영진 출석부에 곧 반영됩니다.', 'success');
 
-        // ── 완료 팝업 즉시 표시 (연간 횟수 없이) ──
+        // ── 완료 팝업 즉시 표시 (연간 횟수 비동기 로딩) ──
         document.getElementById('completionName').textContent = name;
         const countEl = document.getElementById('completionCount');
+        const countSpinner = document.getElementById('completionCountSpinner');
         const countTextEl = document.getElementById('completionCountText');
         const subEl = document.getElementById('completionSub');
         const phraseEl = document.getElementById('completionPhrase');
@@ -910,9 +942,15 @@
         // 연간 횟수가 submit 응답에 포함된 경우 (백엔드 미수정 호환)
         if (result.yearlyCount && result.yearlyCount > 0) {
           countEl.textContent = result.yearlyCount;
+          countSpinner.hidden = true;
+          countEl.hidden = false;
           countTextEl.hidden = false;
         } else {
-          countTextEl.hidden = true;
+          // 로딩 상태: "올해 [스피너]번째 게임 참석!" 표시
+          countSpinner.hidden = false;
+          countEl.hidden = true;
+          countTextEl.hidden = false;
+
           // ── 백그라운드에서 연간 횟수 비동기 조회 ──
           const ycParams = new URLSearchParams({
             action: 'mobile_attendance_info',
@@ -927,9 +965,17 @@
           }).then(readJsonResponse).then(ycResult => {
             if (ycResult.yearlyCount && ycResult.yearlyCount > 0) {
               countEl.textContent = ycResult.yearlyCount;
-              countTextEl.hidden = false;
+              countSpinner.hidden = true;
+              countEl.hidden = false;
+              countEl.classList.remove('count-pop');
+              void countEl.offsetWidth; // 리플로우 트리거하여 애니메이션 재실행
+              countEl.classList.add('count-pop');
+            } else {
+              countTextEl.hidden = true;
             }
-          }).catch(() => {}); // 실패 시 무시 — 팝업은 이미 표시됨
+          }).catch(() => {
+            countTextEl.hidden = true;
+          });
         }
         subEl.hidden = false;
         dom.completionModal.hidden = false;

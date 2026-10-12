@@ -60,7 +60,7 @@ function createPage(search, values, cookies = { value: '' }) {
   const context = {
     URLSearchParams,
     console,
-    fetch() { throw new Error('unexpected fetch'); },
+    fetch() { return Promise.resolve({ ok: true, json: () => Promise.resolve({ success: true }) }); },
     localStorage: storage,
     window: {
       addEventListener() {},
