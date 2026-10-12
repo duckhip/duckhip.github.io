@@ -8,7 +8,33 @@
     '베이스캠프-양주': '25000',
     '그리드알파-양주': '35000'
   };
-  var state = { spreadsheetId: '', token: '', games: [], game: null, dirty: false, eventNames: [], eventsSupported: false, loadedDate: '', hadSavedEvents: false, gameCache: {} };
+  var CACHE_STORAGE_KEY = 'teamk_admin_game_cache';
+  function loadCachedGamesFromStorage() {
+    try {
+      var raw = sessionStorage.getItem(CACHE_STORAGE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch (e) {
+      return {};
+    }
+  }
+  function saveCachedGameToStorage(date, snapshot) {
+    try {
+      var cache = loadCachedGamesFromStorage();
+      cache[date] = snapshot;
+      var keys = Object.keys(cache);
+      if (keys.length > 10) {
+        keys.sort().slice(0, keys.length - 10).forEach(function(k) { delete cache[k]; });
+      }
+      sessionStorage.setItem(CACHE_STORAGE_KEY, JSON.stringify(cache));
+    } catch (e) {}
+  }
+  function clearCachedGamesStorage() {
+    try {
+      sessionStorage.removeItem(CACHE_STORAGE_KEY);
+    } catch (e) {}
+  }
+
+  var state = { spreadsheetId: '', token: '', games: [], game: null, dirty: false, eventNames: [], eventsSupported: false, loadedDate: '', hadSavedEvents: false, gameCache: loadCachedGamesFromStorage() };
   var calendarMonth = new Date();
   var api = window.TeamKAdminApi;
   var domain = window.TeamKDomain;
@@ -106,6 +132,7 @@
       state.token = '';
       state.game = null;
       state.gameCache = {};
+      clearCachedGamesStorage();
       state.eventNames = [];
       state.eventsSupported = false;
       state.loadedDate = '';
@@ -136,7 +163,12 @@
   function applyGameSnapshot(game) {
     state.game = game;
     if (game && game.gameInfo && game.gameInfo.date) {
-      state.gameCache[game.gameInfo.date] = JSON.parse(JSON.stringify(game));
+      var date = game.gameInfo.date;
+      state.gameCache[date] = JSON.parse(JSON.stringify(game));
+      saveCachedGameToStorage(date, state.gameCache[date]);
+      if (el('gameDateSelect').value !== date) {
+        el('gameDateSelect').value = date;
+      }
     }
     state.eventsSupported = Array.isArray(game.eventWinners);
     state.eventNames = Array.isArray(game.eventNames) ? game.eventNames : [];
@@ -160,6 +192,37 @@
     state.games.sort(function(a, b) { return b.date.localeCompare(a.date); });
     renderGameOptions(item.date);
   }
+  var prefetchTimer = null;
+  function prefetchRecentGames() {
+    clearTimeout(prefetchTimer);
+    if (!state.games || !state.games.length || !state.token) return;
+    var candidates = state.games.slice(0, 4).filter(function(g) {
+      if (!g.date) return false;
+      var cached = state.gameCache[g.date];
+      return !cached || (cached.revision || 0) !== (g.revision || 0);
+    });
+    if (!candidates.length) return;
+
+    function fetchNext(index) {
+      if (index >= candidates.length || !state.token) return;
+      var target = candidates[index];
+      api.post({
+        type: 'admin_get_game',
+        spreadsheetId: state.spreadsheetId,
+        sessionToken: state.token,
+        date: target.date
+      }).then(function(snapshot) {
+        if (snapshot && snapshot.gameInfo && snapshot.gameInfo.date) {
+          state.gameCache[snapshot.gameInfo.date] = snapshot;
+          saveCachedGameToStorage(snapshot.gameInfo.date, snapshot);
+        }
+        prefetchTimer = setTimeout(function() { fetchNext(index + 1); }, 600);
+      }).catch(function() {});
+    }
+
+    prefetchTimer = setTimeout(function() { fetchNext(0); }, 1000);
+  }
+
   function loadGames(preferredDate) {
     return request('admin_list_games', {
       preferredDate: preferredDate || '',
@@ -170,6 +233,7 @@
       if (data.selectedGame) {
         renderGameOptions(data.selectedGame.gameInfo.date);
         applyGameSnapshot(data.selectedGame);
+        prefetchRecentGames();
         return;
       }
       renderGameOptions('');
@@ -177,16 +241,28 @@
     });
   }
   function loadGame(date, forceFresh) {
-    if (state.dirty && !confirm('저장하지 않은 변경을 버리고 이동하시겠습니까?')) return Promise.resolve();
-    if (!forceFresh && state.gameCache[date]) {
-      var cached = state.gameCache[date];
-      var gameMeta = state.games.find(function(g) { return g.date === date; });
-      var expectedRev = gameMeta ? (gameMeta.revision || 0) : null;
-      if (expectedRev !== null && (cached.revision || 0) === expectedRev) {
-        applyGameSnapshot(JSON.parse(JSON.stringify(cached)));
-        return Promise.resolve();
+    if (state.dirty && !confirm('저장하지 않은 변경을 버리고 이동하시겠습니까?')) {
+      if (state.game && state.game.gameInfo && state.game.gameInfo.date) {
+        el('gameDateSelect').value = state.game.gameInfo.date;
       }
+      return Promise.resolve();
     }
+    var cached = state.gameCache[date];
+    var gameMeta = state.games.find(function(g) { return g.date === date; });
+    var expectedRev = gameMeta ? (gameMeta.revision || 0) : null;
+
+    if (!forceFresh && cached && expectedRev !== null && (cached.revision || 0) === expectedRev) {
+      applyGameSnapshot(JSON.parse(JSON.stringify(cached)));
+      return Promise.resolve();
+    }
+
+    if (!forceFresh && cached) {
+      applyGameSnapshot(JSON.parse(JSON.stringify(cached)));
+      return request('admin_get_game', { date: date }).then(function(data) {
+        applyGameSnapshot(data);
+      });
+    }
+
     return request('admin_get_game', { date: date }).then(function(data) {
       applyGameSnapshot(data);
     });
@@ -600,6 +676,7 @@
       state.game.qr = Object.assign({}, state.game.qr, result, { token: result.token || payload.token });
       if (state.game && state.game.gameInfo && state.gameCache[state.game.gameInfo.date]) {
         state.gameCache[state.game.gameInfo.date].qr = state.game.qr;
+        saveCachedGameToStorage(state.game.gameInfo.date, state.gameCache[state.game.gameInfo.date]);
       }
       renderQr();
       showMessage(open ? 'QR 접수를 시작했습니다.' : 'QR 접수를 마감했습니다.');
