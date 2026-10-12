@@ -3,6 +3,10 @@
 
   var api = window.TeamKAdminApi;
   var domain = window.TeamKDomain;
+  // ── 콜드스타트 사전 예열: 통계 페이지 진입 즉시 가벼운 health 요청으로 Apps Script VM 활성화 ──
+  var warmupPromise = fetch(api.url + '?action=health&t=' + Date.now(), {
+    cache: 'no-store', credentials: 'omit', redirect: 'follow'
+  }).catch(function() {});
   var state = {
     spreadsheetId: '',
     token: '',
@@ -49,11 +53,13 @@
     el('loadingMessage').textContent = requestedYear + '년 통계를 불러오는 중입니다...';
     el('loadingMessage').hidden = false;
     el('statsContent').hidden = true;
-    api.post({
-      type: 'admin_get_statistics',
-      spreadsheetId: state.spreadsheetId,
-      sessionToken: state.token,
-      year: state.selectedYear
+    warmupPromise.then(function() {
+      return api.post({
+        type: 'admin_get_statistics',
+        spreadsheetId: state.spreadsheetId,
+        sessionToken: state.token,
+        year: state.selectedYear
+      });
     }).then(function(data) {
       if (requestedYear !== state.selectedYear) return;
       state.games = data.games || [];

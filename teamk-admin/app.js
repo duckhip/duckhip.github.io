@@ -12,6 +12,10 @@
   var calendarMonth = new Date();
   var api = window.TeamKAdminApi;
   var domain = window.TeamKDomain;
+  // ── 콜드스타트 사전 예열: 페이지 로드 즉시 가벼운 health 요청으로 Apps Script VM 활성화 ──
+  var warmupPromise = fetch(api.url + '?action=health&t=' + Date.now(), {
+    cache: 'no-store', credentials: 'omit', redirect: 'follow'
+  }).catch(function() {});
   var progress = domain.createProgressTracker(function(active, message) {
     if (active) {
       if (message) el('progressMessage').textContent = message;
@@ -80,18 +84,20 @@
 
   function login(password) {
     state.spreadsheetId = extractSheetId(DEFAULT_SHEET);
-    return api.post({ type: 'admin_login', spreadsheetId: state.spreadsheetId, password: password })
-      .then(function(data) {
-        state.token = data.sessionToken;
-        sessionStorage.setItem('teamk_admin_session', JSON.stringify({
-          spreadsheetId: state.spreadsheetId,
-          token: state.token,
-          expiresAt: data.expiresAt
-        }));
-        el('passwordInput').value = '';
-        showAdmin();
-        return loadGames();
-      });
+    beginProgress(progressLabel('admin_login'));
+    return warmupPromise.then(function() {
+      return api.post({ type: 'admin_login', spreadsheetId: state.spreadsheetId, password: password });
+    }).then(function(data) {
+      state.token = data.sessionToken;
+      sessionStorage.setItem('teamk_admin_session', JSON.stringify({
+        spreadsheetId: state.spreadsheetId,
+        token: state.token,
+        expiresAt: data.expiresAt
+      }));
+      el('passwordInput').value = '';
+      showAdmin();
+      return loadGames();
+    }).finally(endProgress);
   }
 
   function logout(callServer) {
@@ -668,7 +674,11 @@
       state.spreadsheetId = saved.spreadsheetId;
       state.token = saved.token;
       showAdmin();
-      loadGames().catch(function(error) { showMessage(error.message, true); });
+      warmupPromise.then(function() {
+        return loadGames();
+      }).catch(function() {
+        return loadGames();
+      }).catch(function(error) { showMessage(error.message, true); });
     }
   } catch (error) {
     sessionStorage.removeItem('teamk_admin_session');
