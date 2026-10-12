@@ -16,7 +16,8 @@
     allAttendeesRendered: false,
     selectedYear: String(new Date().getFullYear()),
     monthlyChart: null,
-    fieldChart: null
+    fieldChart: null,
+    statsCache: {}
   };
 
   function el(id) { return document.getElementById(id); }
@@ -47,8 +48,20 @@
     }
   }
 
-  function loadStatistics() {
+  function loadStatistics(forceFresh) {
     var requestedYear = state.selectedYear;
+    if (!forceFresh && state.statsCache[requestedYear]) {
+      var cached = state.statsCache[requestedYear];
+      state.games = cached.games || [];
+      state.eventWinners = Array.isArray(cached.eventWinners) ? cached.eventWinners : null;
+      renderYearOptions(cached.availableYears || []);
+      renderStatistics();
+      el('loadingMessage').hidden = true;
+      el('statsContent').hidden = false;
+      el('statisticsYear').disabled = false;
+      return;
+    }
+
     el('statisticsYear').disabled = true;
     el('loadingMessage').textContent = requestedYear + '년 통계를 불러오는 중입니다...';
     el('loadingMessage').hidden = false;
@@ -62,6 +75,7 @@
       });
     }).then(function(data) {
       if (requestedYear !== state.selectedYear) return;
+      state.statsCache[requestedYear] = data;
       state.games = data.games || [];
       state.eventWinners = Array.isArray(data.eventWinners) ? data.eventWinners : null;
       renderYearOptions(data.availableYears || []);
