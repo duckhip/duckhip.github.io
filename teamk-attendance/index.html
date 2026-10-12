@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0d6598">
+  <link rel="preconnect" href="https://script.google.com" crossorigin>
+  <link rel="dns-prefetch" href="https://script.google.com">
+  <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
+  <link rel="dns-prefetch" href="https://script.googleusercontent.com">
   <title>Team-K 모바일 출석</title>
   <style>
     :root {
@@ -610,6 +614,11 @@
       token: query.get('token') || ''
     };
 
+    // ── 콜드스타트 사전 예열: 페이지 로드 즉시 가벼운 health 요청으로 Apps Script VM 활성화 ──
+    const warmupPromise = fetch(`${APPS_SCRIPT_URL}?action=health&t=${Date.now()}`, {
+      cache: 'no-store', credentials: 'omit', redirect: 'follow'
+    }).catch(() => {});
+
     const form = document.getElementById('attendanceForm');
     const dom = {
       message: document.getElementById('message'),
@@ -655,7 +664,9 @@
       });
     }
 
-    function requestAttendanceInfo() {
+    async function requestAttendanceInfo() {
+      // warmup 완료 대기 후 실제 데이터 요청 (VM이 warm 상태 보장)
+      await warmupPromise;
       const params = new URLSearchParams({
         action: 'mobile_attendance_info',
         spreadsheetId: attendance.spreadsheetId,
@@ -857,7 +868,7 @@
       }
       persistRememberedName();
       setSubmitting(true);
-      submitAttendance({
+      const payload = {
         type: 'submit_mobile_attendance',
         spreadsheetId: attendance.spreadsheetId,
         date: attendance.date,
@@ -867,16 +878,18 @@
         minorCount: dom.minor.checked
           ? parseInt(dom.minorCount.value, 10)
           : 0,
-        note: ''
-      }).then(result => {
+        note: '',
+        skipYearlyCount: true  // 연간 횟수 계산 생략 → 응답 속도 최적화
+      };
+      submitAttendance(payload).then(result => {
         if (!result.success) {
           throw new Error(result.error || '출석 등록에 실패했습니다.');
         }
         setSubmitting(false);
         showMessage('출석 등록이 완료되었습니다. 운영진 출석부에 곧 반영됩니다.', 'success');
-        // 완료 팝업: 이름 및 올해 참석 횟수 표시
+
+        // ── 완료 팝업 즉시 표시 (연간 횟수 없이) ──
         document.getElementById('completionName').textContent = name;
-        const yearlyCount = result.yearlyCount;
         const countEl = document.getElementById('completionCount');
         const countTextEl = document.getElementById('completionCountText');
         const subEl = document.getElementById('completionSub');
@@ -894,11 +907,29 @@
         ];
         phraseEl.textContent = phrases[Math.floor(Math.random() * phrases.length)];
 
-        if (yearlyCount && yearlyCount > 0) {
-          countEl.textContent = yearlyCount;
+        // 연간 횟수가 submit 응답에 포함된 경우 (백엔드 미수정 호환)
+        if (result.yearlyCount && result.yearlyCount > 0) {
+          countEl.textContent = result.yearlyCount;
           countTextEl.hidden = false;
         } else {
           countTextEl.hidden = true;
+          // ── 백그라운드에서 연간 횟수 비동기 조회 ──
+          const ycParams = new URLSearchParams({
+            action: 'mobile_attendance_info',
+            spreadsheetId: attendance.spreadsheetId,
+            date: attendance.date,
+            token: attendance.token,
+            includeYearlyCount: name,
+            timestamp: Date.now().toString()
+          });
+          fetch(`${APPS_SCRIPT_URL}?${ycParams.toString()}`, {
+            cache: 'no-store', credentials: 'omit', redirect: 'follow'
+          }).then(readJsonResponse).then(ycResult => {
+            if (ycResult.yearlyCount && ycResult.yearlyCount > 0) {
+              countEl.textContent = ycResult.yearlyCount;
+              countTextEl.hidden = false;
+            }
+          }).catch(() => {}); // 실패 시 무시 — 팝업은 이미 표시됨
         }
         subEl.hidden = false;
         dom.completionModal.hidden = false;
