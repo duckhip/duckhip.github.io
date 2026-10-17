@@ -57,6 +57,7 @@
             <select id="gameFieldSelect">
               <option value="">필드 선택</option>
               <option value="베이스캠프-양주">베이스캠프-양주</option>
+              <option value="베이스캠프(2호)-양주">베이스캠프(2호)-양주</option>
               <option value="그리드알파-양주">그리드알파-양주</option>
               <option value="직접입력">직접입력</option>
             </select>
@@ -132,8 +133,10 @@
       <h2 id="attendeeDialogTitle">출석자 추가</h2>
       <input id="attendeeId" type="hidden">
       <label>성명<input id="attendeeName" required></label>
-      <label class="check"><input id="attendeePaid" type="checkbox" checked> 입금 완료</label>
-      <label class="check"><input id="attendeeMinor" type="checkbox"> <span id="attendeeMinorText">소인 추가</span></label>
+      <div class="check-row">
+        <label class="check"><input id="attendeePaid" type="checkbox" checked> 입금 완료</label>
+        <label class="check"><input id="attendeeMinor" type="checkbox"> <span id="attendeeMinorText">소인 추가</span></label>
+      </div>
       <label id="attendeeMinorCountLabel" hidden>추가할 소인 수
         <select id="attendeeMinorCount">
           <option value="1">1명</option>

@@ -6,6 +6,7 @@
   var MOBILE_PAGE_URL = 'https://duckhip.github.io/teamk-attendance/';
   var FIELD_DEFAULT_FEES = {
     '베이스캠프-양주': '25000',
+    '베이스캠프(2호)-양주': '25000',
     '그리드알파-양주': '35000'
   };
   var CACHE_STORAGE_KEY = 'teamk_admin_game_cache';
@@ -358,7 +359,7 @@
     renderQr();
   }
   function renderField(field) {
-    var fixedFields = ['베이스캠프-양주', '그리드알파-양주'];
+    var fixedFields = ['베이스캠프-양주', '베이스캠프(2호)-양주', '그리드알파-양주'];
     var isFixed = fixedFields.indexOf(field) >= 0;
     var isCustom = Boolean(field) && !isFixed;
     el('gameFieldSelect').value = isFixed ? field : (isCustom ? '직접입력' : '');

@@ -464,10 +464,17 @@ dialog form {
   gap: 8px;
 }
 
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
 .check {
   display: flex;
   align-items: center;
   gap: 8px;
+  cursor: pointer;
 }
 
 .check input {
