@@ -17,6 +17,15 @@
 
   function upsertAttendee(attendees, input) {
     var list = attendees || [];
+    if (!input.id && input.id !== 0) {
+      return list.concat(createAttendee({
+        id: '',
+        name: input.name,
+        paid: input.paid == null ? true : input.paid,
+        minor: input.minor,
+        note: input.note
+      }));
+    }
     var existing = list.find(function(item) { return sameId(item.id, input.id); });
     var attendee = createAttendee({
       id: input.id,
@@ -31,21 +40,19 @@
 
   function addAttendeeGroup(attendees, input) {
     var minorCount = Math.max(0, Math.min(5, parseInt(input.minorCount, 10) || 0));
-    var next = upsertAttendee(attendees, {
-      id: '',
+    var next = (attendees || []).concat(createAttendee({
       name: input.name,
       paid: input.paid,
       minor: false,
       note: input.note
-    });
+    }));
     for (var index = 1; index <= minorCount; index++) {
-      next = upsertAttendee(next, {
-        id: '',
+      next = next.concat(createAttendee({
         name: input.name + '+소인' + index,
         paid: input.paid,
         minor: true,
         note: input.note
-      });
+      }));
     }
     return next;
   }

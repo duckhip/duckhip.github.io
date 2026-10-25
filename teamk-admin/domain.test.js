@@ -116,3 +116,83 @@ test('progress tracker stays active until nested requests finish', () => {
     [false, 0]
   ]);
 });
+
+test('adding a new attendee preserves all existing attendee names', () => {
+  const existing = [
+    { id: '1', name: '홍길동', paid: true, minor: false, note: '' },
+    { id: '2', name: '김철수', paid: true, minor: false, note: '' },
+    { id: '3', name: '이영희', paid: false, minor: false, note: '' },
+    { id: '4', name: '박지민', paid: true, minor: false, note: '' },
+    { id: '5', name: '정수현', paid: true, minor: false, note: '' },
+  ];
+  const result = domain.addAttendeeGroup(existing, {
+    name: '신규사용자',
+    paid: true,
+    minorCount: 0,
+    note: ''
+  });
+  assert.equal(result.length, 6);
+  assert.deepEqual(
+    Array.from(result, item => item.name),
+    ['홍길동', '김철수', '이영희', '박지민', '정수현', '신규사용자']
+  );
+});
+
+test('adding a new attendee with minors preserves existing names', () => {
+  const existing = [
+    { id: '1', name: '홍길동', paid: true, minor: false, note: '' },
+    { id: '2', name: '김철수', paid: true, minor: false, note: '' },
+    { id: '3', name: '이영희', paid: false, minor: false, note: '' },
+    { id: '4', name: '박지민', paid: true, minor: false, note: '' },
+    { id: '5', name: '정수현', paid: true, minor: false, note: '' },
+  ];
+  const result = domain.addAttendeeGroup(existing, {
+    name: '신규사용자',
+    paid: true,
+    minorCount: 2,
+    note: ''
+  });
+  assert.equal(result.length, 8);
+  assert.deepEqual(
+    Array.from(result, item => item.name),
+    ['홍길동', '김철수', '이영희', '박지민', '정수현', '신규사용자', '신규사용자+소인1', '신규사용자+소인2']
+  );
+});
+
+test('upsertAttendee with empty id does not overwrite attendees with missing ids', () => {
+  const existing = [
+    { name: '홍길동', paid: true, minor: false, note: '' },
+    { name: '김철수', paid: true, minor: false, note: '' },
+  ];
+  const result = domain.upsertAttendee(existing, {
+    id: '',
+    name: '신규사용자',
+    paid: true,
+    minor: false,
+    note: ''
+  });
+  assert.equal(result.length, 3);
+  assert.equal(result[0].name, '홍길동');
+  assert.equal(result[1].name, '김철수');
+  assert.equal(result[2].name, '신규사용자');
+});
+
+test('upsertAttendee with empty id does not match attendees with undefined id', () => {
+  const existing = [
+    { id: undefined, name: '홍길동', paid: true, minor: false, note: '' },
+    { id: null, name: '김철수', paid: true, minor: false, note: '' },
+    { id: '3', name: '이영희', paid: true, minor: false, note: '' },
+  ];
+  const result = domain.upsertAttendee(existing, {
+    id: '',
+    name: '신규사용자',
+    paid: true,
+    minor: false,
+    note: ''
+  });
+  assert.equal(result.length, 4);
+  assert.equal(result[0].name, '홍길동');
+  assert.equal(result[1].name, '김철수');
+  assert.equal(result[2].name, '이영희');
+  assert.equal(result[3].name, '신규사용자');
+});
