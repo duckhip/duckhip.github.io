@@ -123,8 +123,7 @@
     .season-tag { color: var(--season-accent, #a8dcae); font-weight: 700; }
     .briefing h2 { margin: 12px 0 9px; font-size: clamp(1.3rem, 5.8vw, 1.75rem); letter-spacing: -0.04em; word-break: keep-all; }
     .briefing p { margin: 0; color: #d7e6ec; font-size: 0.86rem; line-height: 1.6; word-break: keep-all; }
-    .completion-callsign { margin: 10px 0; color: var(--brand-dark); font-weight: 700; }
-    .completion-badge { display: inline-block; padding: 5px 12px; margin-bottom: 10px; border: 1px solid #a7c9b0; border-radius: 20px; color: #246039; font-size: 0.85rem; }
+    .completion-badge { display: inline-block; padding: 5px 12px; margin-top: 10px; border: 1px solid #a7c9b0; border-radius: 20px; color: #246039; font-size: 0.85rem; }
 
     .copy-btn {
       flex: 0 0 auto;
@@ -312,7 +311,7 @@
       z-index: 1000;
       display: grid;
       place-items: center;
-      padding: 20px;
+      padding: 16px;
       background: rgba(14, 30, 44, 0.65);
     }
 
@@ -321,8 +320,12 @@
     }
 
     .completion-panel {
-      width: min(100%, 360px);
-      padding: 28px 24px 24px;
+      width: min(100%, 400px);
+      max-height: calc(100vh - 32px);
+      max-height: calc(100dvh - 32px);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: 22px 20px 18px;
       border-radius: 22px;
       background: #fff;
       text-align: center;
@@ -340,9 +343,9 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 76px;
-      height: 76px;
-      margin-bottom: 14px;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 10px;
     }
 
     .completion-logo-wrap::before {
@@ -365,15 +368,9 @@
     .completion-logo {
       position: relative;
       z-index: 1;
-      width: 60px;
-      height: 60px;
+      width: 36px;
+      height: 36px;
       object-fit: contain;
-    }
-
-    .completion-check {
-      display: block;
-      margin: 0 auto 4px;
-      font-size: 1.6rem;
     }
 
     .completion-panel h2 {
@@ -382,60 +379,72 @@
       font-weight: 800;
       color: var(--ink);
       letter-spacing: -0.03em;
+      overflow-wrap: anywhere;
     }
 
     .completion-name {
       color: var(--brand-dark);
     }
 
-    .completion-panel .completion-sub {
-      margin: 0 0 20px;
+    .completion-saved {
+      margin: 0 0 16px;
       color: var(--muted);
-      font-size: 0.92rem;
+      font-size: 0.8rem;
       line-height: 1.6;
+      word-break: keep-all;
     }
 
-    .completion-panel .completion-sub strong {
-      display: inline-block;
-      color: var(--brand-dark);
-      font-weight: 800;
+    .count-status {
+      padding: 18px 14px;
+      border: 1px solid #b9dbe9;
+      border-radius: 15px;
+      background: #eef8fc;
+      margin-bottom: 16px;
     }
-
-    .count-spinner {
-      display: inline-block;
-      width: 14px;
-      height: 14px;
-      vertical-align: -2px;
-      margin: 0 4px;
-      border: 2px solid #d9e6ed;
-      border-top-color: var(--brand);
-      border-radius: 50%;
-      animation: count-spin 0.75s linear infinite;
-      box-sizing: border-box;
+    .count-status h3 { margin: 0; font-size: 1.04rem; line-height: 1.5; word-break: keep-all; color: #135c81; }
+    .count-status p { margin: 8px 0 0; font-size: 0.8rem; line-height: 1.6; color: #486779; word-break: keep-all; }
+    .count-status[data-state="ready"] { background: #f0f8f3; border-color: #bddbc7; }
+    .count-status[data-state="ready"] h3 { color: #246039; font-size: 0.82rem; }
+    .count-status[data-state="error"] { background: #f5f7f8; border-color: var(--line); }
+    .count-progress { height: 7px; margin-top: 14px; border-radius: 10px; overflow: hidden; background: #d2e7f0; }
+    .count-progress::after { content: ''; display: block; width: 40%; height: 100%; border-radius: inherit; background: #1685c5; animation: count-travel 1.7s ease-in-out infinite; }
+    @keyframes count-travel {
+      from { transform: translateX(-100%); }
+      to { transform: translateX(350%); }
     }
-
-    .count-spinner[hidden] {
-      display: none !important;
+    .count-result { margin-top: 8px; color: #183c2a; font-size: 1.08rem; font-weight: 700; }
+    .count-result strong { font-size: 2.5rem; line-height: 1.2; margin-right: 3px; }
+    .count-retry { width: auto; min-height: 40px; padding: 6px 16px; margin-top: 12px; font-size: 0.86rem; box-shadow: none; }
+    .completion-briefing-title { margin: 0 0 9px; text-align: left; color: var(--muted); font-size: 0.73rem; letter-spacing: 0.04em; }
+    .completion-info { padding: 14px 16px; margin-bottom: 10px; border-radius: 13px; text-align: left; border: 1px solid var(--line); }
+    .completion-info .info-label { display: block; font-size: 0.72rem; margin-bottom: 6px; color: var(--muted); }
+    .completion-info strong { font-size: 1.2rem; letter-spacing: -0.03em; }
+    .completion-info p { margin: 0; font-size: 0.95rem; line-height: 1.55; word-break: keep-all; }
+    .callsign-card { background: #183b4b; color: #fff; border-color: #183b4b; }
+    .callsign-card .info-label { color: #bad9e5; }
+    .completion-actions { position: sticky; bottom: -18px; padding: 8px 0 0; background: #fff; }
+    #completionCloseButton.waiting { background: #fff; color: #5a6e7b; border: 1px solid #c7d4dc; box-shadow: none; font-size: 0.88rem; }
+    .completion-panel:focus { outline: none; }
+    @media (max-height: 680px) {
+      .completion-logo-wrap { display: none; }
+      .completion-panel { padding: 16px 14px 12px; }
+      .completion-saved { margin-bottom: 10px; font-size: 0.76rem; }
+      .count-status { padding: 12px; margin-bottom: 12px; }
+      .count-status h3 { font-size: 0.94rem; }
+      .completion-info { padding: 10px 12px; margin-bottom: 8px; }
+      .completion-actions { bottom: -12px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .count-progress::after { width: 100%; opacity: 0.6; }
     }
 
     .count-pop {
       animation: count-pop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    @keyframes count-spin {
-      to { transform: rotate(360deg); }
-    }
-
     @keyframes count-pop {
       from { opacity: 0; transform: scale(0.6); }
       to   { opacity: 1; transform: scale(1); }
-    }
-
-    .completion-panel .completion-phrase {
-      display: block;
-      margin-top: 6px;
-      color: var(--brand);
-      font-weight: 700;
     }
 
     .close-fallback {
@@ -537,18 +546,34 @@
     </section>
   </main>
   <div id="completionModal" class="completion-modal" role="dialog" aria-modal="true" aria-labelledby="completionTitle" hidden>
-    <div class="completion-panel">
+    <div id="completionPanel" class="completion-panel" tabindex="-1">
       <div class="completion-logo-wrap">
-        <img class="completion-logo" src="./images/team_k_logo.png" alt="Team-K 로고" width="60" height="60">
+        <img class="completion-logo" src="./images/team_k_logo.png" alt="Team-K 로고" width="36" height="36">
       </div>
       <h2 id="completionTitle"><span id="completionName" class="completion-name"></span>님 출석완료!</h2>
-      <p id="completionCallsign" class="completion-callsign"></p>
-      <span id="completionBadge" class="completion-badge" hidden></span>
-      <div id="completionSub" class="completion-sub">
-        <span id="completionCountText">올해 <span id="completionCountSpinner" class="count-spinner" aria-label="조회 중"></span><strong id="completionCount" hidden>-</strong>번째 게임 참석!</span>
-        <span id="completionPhrase" class="completion-phrase"></span>
+      <p class="completion-saved">출석은 저장됐어요. 이제 나의 기록을 확인해 보세요.</p>
+      <section id="completionCountStatus" class="count-status" data-state="loading" aria-labelledby="completionCountTitle">
+        <div role="status" aria-live="polite" aria-atomic="true">
+          <h3 id="completionCountTitle">올해 몇 번째 출석인지<br>확인하고 있어요</h3>
+          <div id="completionCountText" class="count-result" hidden><strong id="completionCount">-</strong>번째 출석!</div>
+          <p id="completionCountDetail">아래 콜사인과 미션을 읽으며 잠시 기다려 주세요.</p>
+          <span id="completionBadge" class="completion-badge" hidden></span>
+        </div>
+        <div id="completionCountProgress" class="count-progress" role="progressbar" aria-label="올해 출석 횟수 확인 중"></div>
+        <button id="completionCountRetry" class="count-retry" type="button" hidden>횟수 다시 확인</button>
+      </section>
+      <h3 class="completion-briefing-title">오늘의 필드 브리핑</h3>
+      <div class="completion-info callsign-card">
+        <span class="info-label">나의 콜사인</span>
+        <strong id="completionCallsign"></strong>
       </div>
-      <button id="completionCloseButton" type="button">닫기</button>
+      <div class="completion-info">
+        <span class="info-label">오늘의 미션</span>
+        <p id="completionPhrase"></p>
+      </div>
+      <div class="completion-actions">
+        <button id="completionCloseButton" type="button">닫기</button>
+      </div>
     </div>
   </div>
   <section id="closeFallback" class="close-fallback" hidden>
@@ -583,6 +608,10 @@
     let attendanceOpen = false;
     let submitting = false;
     let completionRequest = 0;
+    let completionName = '';
+    let countController = null;
+    let countSlowTimer = null;
+    let countTimeout = null;
 
     function contentIndex(value, length) {
       let hash = 0;
@@ -786,15 +815,98 @@
       dom.minorCount.disabled = !event.target.checked;
     });
 
+    function stopCountLookup() {
+      clearTimeout(countSlowTimer);
+      clearTimeout(countTimeout);
+      countSlowTimer = null;
+      countTimeout = null;
+      if (countController) countController.abort();
+      countController = null;
+    }
+
+    function displayCompletionCount(value, requestId) {
+      if (requestId !== completionRequest) return;
+      // 완료/실패/시간 초과 뒤 도착하는 이전 응답은 화면을 다시 바꾸지 않습니다.
+      completionRequest++;
+      stopCountLookup();
+      const count = Number(value);
+      const valid = Number.isInteger(count) && count > 0;
+      document.getElementById('completionCountStatus').setAttribute('data-state', valid ? 'ready' : 'error');
+      document.getElementById('completionCountTitle').textContent = valid ? '올해 쌓은 나의 출석 기록' : '출석 횟수를 불러오지 못했어요';
+      document.getElementById('completionCountText').hidden = !valid;
+      document.getElementById('completionCount').textContent = valid ? String(count) : '-';
+      document.getElementById('completionCountProgress').hidden = true;
+      document.getElementById('completionCountRetry').hidden = valid;
+      document.getElementById('completionCountDetail').textContent = valid
+        ? '오늘도 함께해 주셔서 감사합니다. 필드에서 만나요!'
+        : '출석 등록은 완료됐어요. 다시 조회하거나 지금 닫아도 괜찮아요.';
+      dom.completionCloseButton.classList.remove('waiting');
+      dom.completionCloseButton.textContent = valid ? '확인했어요 · 닫기' : '닫기';
+      if (valid) document.getElementById('completionCount').classList.add('count-pop');
+      const labels = { 1: '첫 출동 완료', 5: '5회 출석 · 필드 적응 완료', 10: '10회 출석 · 필드 단골', 20: '20회 출석 · 팀워크 베테랑', 30: '30회 출석 · 주말 수호자', 50: '50회 출석 · Team-K 레전드' };
+      const badge = document.getElementById('completionBadge');
+      badge.textContent = valid ? labels[count] || '' : '';
+      badge.hidden = !badge.textContent;
+    }
+
+    function loadCompletionCount(name, initialValue) {
+      const requestId = ++completionRequest;
+      stopCountLookup();
+      document.getElementById('completionCountStatus').setAttribute('data-state', 'loading');
+      document.getElementById('completionCountTitle').textContent = '올해 몇 번째 출석인지 확인하고 있어요';
+      document.getElementById('completionCountDetail').textContent = '아래 콜사인과 미션을 읽으며 잠시 기다려 주세요.';
+      document.getElementById('completionCountText').hidden = true;
+      document.getElementById('completionCount').classList.remove('count-pop');
+      document.getElementById('completionCountProgress').hidden = false;
+      document.getElementById('completionCountRetry').hidden = true;
+      document.getElementById('completionBadge').hidden = true;
+      dom.completionCloseButton.classList.add('waiting');
+      dom.completionCloseButton.textContent = '기다리지 않고 닫기';
+      if (Number.isInteger(Number(initialValue)) && Number(initialValue) > 0) {
+        displayCompletionCount(initialValue, requestId);
+        return;
+      }
+      countSlowTimer = setTimeout(() => {
+        if (requestId === completionRequest) {
+          document.getElementById('completionCountDetail').textContent = '조회가 조금 늦어지고 있어요. 출석은 이미 저장됐어요.';
+        }
+      }, 7000);
+      countTimeout = setTimeout(() => displayCompletionCount(0, requestId), 30000);
+      countController = typeof AbortController === 'function' ? new AbortController() : null;
+      const params = new URLSearchParams({
+        action: 'mobile_attendance_info',
+        spreadsheetId: attendance.spreadsheetId,
+        date: attendance.date,
+        token: attendance.token,
+        includeYearlyCount: name,
+        timestamp: Date.now().toString()
+      });
+      fetch(`${APPS_SCRIPT_URL}?${params.toString()}`, {
+        cache: 'no-store', credentials: 'omit', redirect: 'follow',
+        signal: countController ? countController.signal : undefined
+      }).then(readJsonResponse).then(result => {
+        displayCompletionCount(result.success ? result.yearlyCount : 0, requestId);
+      }).catch(() => displayCompletionCount(0, requestId));
+    }
+
+    document.getElementById('completionCountRetry').addEventListener('click', () => {
+      if (dom.completionModal.hidden) return;
+      loadCompletionCount(completionName);
+      document.getElementById('completionPanel').focus();
+    });
+
     function closeMobileAttendance() {
       completionRequest++;
+      stopCountLookup();
       dom.completionModal.hidden = true;
+      dom.shell.inert = false;
       dom.shell.hidden = true;
       dom.closeFallback.hidden = false;
       window.close();
     }
 
     dom.completionCloseButton.addEventListener('click', closeMobileAttendance);
+    window.addEventListener('pagehide', () => { completionRequest++; stopCountLookup(); });
 
     document.getElementById('copyAccountBtn').addEventListener('click', () => {
       const accountText = dom.gameAccount.textContent || '';
@@ -845,63 +957,16 @@
         setSubmitting(false);
         showMessage('출석 등록이 완료되었습니다. 운영진 출석부에 곧 반영됩니다.', 'success');
 
-        // ── 완료 팝업 즉시 표시 (연간 횟수 비동기 로딩) ──
+        // 출석 성공은 먼저 표시하고 연간 기록은 별도로 조회합니다.
+        completionName = name;
         document.getElementById('completionName').textContent = name;
-        const countEl = document.getElementById('completionCount');
-        const countSpinner = document.getElementById('completionCountSpinner');
-        const countTextEl = document.getElementById('completionCountText');
-        const subEl = document.getElementById('completionSub');
-        const phraseEl = document.getElementById('completionPhrase');
-        const requestId = ++completionRequest;
-        const badge = document.getElementById('completionBadge');
-        badge.hidden = true;
         const seed = attendance.date + '|' + name;
-        document.getElementById('completionCallsign').textContent = '오늘의 콜사인: ' + FUN_CONTENT.callsigns[contentIndex(seed, FUN_CONTENT.callsigns.length)];
-        phraseEl.textContent = '오늘의 미션: ' + FUN_CONTENT.missions[contentIndex(seed, FUN_CONTENT.missions.length)];
-
-        function displayCount(value) {
-          if (requestId !== completionRequest) return;
-          const count = Number(value);
-          countSpinner.hidden = true;
-          countTextEl.hidden = !Number.isInteger(count) || count < 1;
-          if (countTextEl.hidden) return;
-          countEl.textContent = count;
-          countEl.hidden = false;
-          countEl.classList.add('count-pop');
-          const labels = { 1: '첫 출동 완료', 5: '5회 출석 · 필드 적응 완료', 10: '10회 출석 · 필드 단골', 20: '20회 출석 · 팀워크 베테랑', 30: '30회 출석 · 주말 수호자', 50: '50회 출석 · Team-K 레전드' };
-          badge.textContent = labels[count] || '';
-          badge.hidden = !labels[count];
-        }
-
-        // 연간 횟수가 submit 응답에 포함된 경우 (백엔드 미수정 호환)
-        if (result.yearlyCount && result.yearlyCount > 0) {
-          displayCount(result.yearlyCount);
-        } else {
-          // 로딩 상태: "올해 [스피너]번째 게임 참석!" 표시
-          countSpinner.hidden = false;
-          countEl.hidden = true;
-          countTextEl.hidden = false;
-
-          // ── 백그라운드에서 연간 횟수 비동기 조회 ──
-          const ycParams = new URLSearchParams({
-            action: 'mobile_attendance_info',
-            spreadsheetId: attendance.spreadsheetId,
-            date: attendance.date,
-            token: attendance.token,
-            includeYearlyCount: name,
-            timestamp: Date.now().toString()
-          });
-          fetch(`${APPS_SCRIPT_URL}?${ycParams.toString()}`, {
-            cache: 'no-store', credentials: 'omit', redirect: 'follow'
-          }).then(readJsonResponse).then(ycResult => {
-            displayCount(ycResult.success ? ycResult.yearlyCount : 0);
-          }).catch(() => {
-            displayCount(0);
-          });
-        }
-        subEl.hidden = false;
+        document.getElementById('completionCallsign').textContent = FUN_CONTENT.callsigns[contentIndex(seed, FUN_CONTENT.callsigns.length)];
+        document.getElementById('completionPhrase').textContent = FUN_CONTENT.missions[contentIndex(seed, FUN_CONTENT.missions.length)];
         dom.completionModal.hidden = false;
-        dom.completionCloseButton.focus();
+        dom.shell.inert = true;
+        loadCompletionCount(name, result.yearlyCount);
+        document.getElementById('completionPanel').focus();
       }).catch(error => {
         setSubmitting(false);
         showMessage(error.message || '통신 중 오류가 발생했습니다.', 'error');

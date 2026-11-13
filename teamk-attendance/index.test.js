@@ -14,6 +14,7 @@ test('shows the Team-K image in the attendance header', () => {
 
 function createElement() {
   const listeners = {};
+  const attributes = {};
   return {
     checked: false,
     classList: {
@@ -21,14 +22,16 @@ function createElement() {
       remove() {}
     },
     disabled: false,
-    focus() {},
+    focused: false,
+    focus() { this.focused = true; },
     hidden: false,
     querySelectorAll() { return []; },
     scrollIntoView() {},
     textContent: '',
     value: '',
     style: { setProperty() {} },
-    setAttribute() {},
+    setAttribute(key, value) { attributes[key] = value; },
+    getAttribute(key) { return attributes[key]; },
     addEventListener(type, listener) {
       listeners[type] = listener;
     },
@@ -41,6 +44,8 @@ function createElement() {
 function createPage(search, values, cookies = { value: '' }, responder) {
   const elements = new Map();
   const requests = [];
+  const timers = new Map();
+  let nextTimer = 0;
   const storage = {
     getItem(key) { return values.get(key) ?? null; },
     removeItem(key) { values.delete(key); },
@@ -63,6 +68,9 @@ function createPage(search, values, cookies = { value: '' }, responder) {
   const context = {
     URLSearchParams,
     console,
+    AbortController,
+    setTimeout(callback, delay) { const id = ++nextTimer; timers.set(id, { callback, delay }); return id; },
+    clearTimeout(id) { timers.delete(id); },
     fetch(url, options) {
       requests.push({ url, options });
       return responder ? responder(url, options) : Promise.resolve(response({ success: true, open: true }));
@@ -77,7 +85,11 @@ function createPage(search, values, cookies = { value: '' }, responder) {
   };
   vm.createContext(context);
   vm.runInContext(script, context);
-  return { context, elements, requests };
+  return { context, elements, requests, timers, fireTimer(delay) {
+    for (const [id, timer] of timers) {
+      if (timer.delay === delay) { timers.delete(id); timer.callback(); }
+    }
+  } };
 }
 
 function response(value) { return { ok: true, text: () => Promise.resolve(JSON.stringify(value)) }; }
@@ -175,15 +187,86 @@ test('success appears before count lookup and duplicate clicks cannot submit twi
   finishSubmit(response({ success: true }));
   await settle();
   assert.equal(page.elements.get('completionModal').hidden, false);
-  assert.match(page.elements.get('completionCallsign').textContent, /오늘의 콜사인/);
+  assert.ok(page.elements.get('completionCallsign').textContent);
+  assert.ok(page.elements.get('completionPhrase').textContent);
+  assert.match(page.elements.get('completionCountTitle').textContent, /몇 번째 출석인지 확인/);
+  assert.equal(page.elements.get('completionCountProgress').hidden, false);
+  assert.equal(page.elements.get('completionCloseButton').textContent, '기다리지 않고 닫기');
+  assert.equal(page.elements.get('completionCloseButton').focused, false);
+  assert.equal(page.elements.get('completionPanel').focused, true);
   assert.equal(page.requests.length, 3, 'info, submit and existing count lookup only');
   finishCount(response({ success: true, yearlyCount: 10 }));
   await settle();
-  assert.equal(page.elements.get('completionCount').textContent, 10);
+  assert.equal(page.elements.get('completionCount').textContent, '10');
   assert.equal(page.elements.get('completionBadge').hidden, false);
+  assert.equal(page.elements.get('completionCountProgress').hidden, true);
+  assert.equal(page.elements.get('completionCountStatus').getAttribute('data-state'), 'ready');
+  assert.equal(page.timers.size, 0);
   page.elements.get('completionCloseButton').dispatch('click');
   assert.equal(page.elements.get('completionModal').hidden, true);
   assert.equal(page.elements.get('closeFallback').hidden, false);
+});
+
+test('slow lookup explains the wait, times out visibly, and retries only the count', async () => {
+  const finishes = [];
+  const page = createPage(validQuery, new Map(), undefined, () => new Promise(resolve => finishes.push(resolve)));
+  vm.runInContext('completionName = "테스트대원"; loadCompletionCount(completionName)', page.context);
+  page.fireTimer(7000);
+  assert.match(page.elements.get('completionCountDetail').textContent, /조금 늦어지고/);
+  page.fireTimer(30000);
+  assert.equal(page.elements.get('completionCountStatus').getAttribute('data-state'), 'error');
+  assert.match(page.elements.get('completionCountDetail').textContent, /출석 등록은 완료/);
+  assert.equal(page.elements.get('completionCountProgress').hidden, true);
+  assert.equal(page.elements.get('completionCountRetry').hidden, false);
+  assert.equal(page.requests[0].options.signal.aborted, true);
+  assert.equal(page.timers.size, 0);
+  page.elements.get('completionCountRetry').dispatch('click');
+  assert.equal(page.requests.length, 2);
+  assert.ok(page.requests.every(request => request.url.includes('includeYearlyCount')));
+  finishes[0](response({ success: true, yearlyCount: 999 }));
+  await settle();
+  assert.equal(page.elements.get('completionCountStatus').getAttribute('data-state'), 'loading');
+  finishes[1](response({ success: true, yearlyCount: 12 }));
+  await settle();
+  assert.equal(page.elements.get('completionCount').textContent, '12');
+  assert.equal(page.elements.get('completionCountStatus').getAttribute('data-state'), 'ready');
+  assert.equal(page.timers.size, 0);
+});
+
+test('closing while waiting cancels lookup and ignores a late response', async () => {
+  let finish;
+  const page = createPage(validQuery, new Map(), undefined, () => new Promise(resolve => { finish = resolve; }));
+  vm.runInContext('loadCompletionCount("테스트대원")', page.context);
+  page.elements.get('completionCloseButton').dispatch('click');
+  assert.equal(page.requests[0].options.signal.aborted, true);
+  assert.equal(page.timers.size, 0);
+  finish(response({ success: true, yearlyCount: 20 }));
+  await settle();
+  assert.equal(page.elements.get('completionModal').hidden, true);
+  assert.equal(page.elements.get('completionCountStatus').getAttribute('data-state'), 'loading');
+  assert.equal(page.elements.get('completionCloseButton').textContent, '기다리지 않고 닫기');
+});
+
+test('lookup errors and invalid counts preserve the saved attendance message', async () => {
+  for (const result of [{ success: false }, { success: true, yearlyCount: 0 }, { success: true, yearlyCount: 'invalid' }, null]) {
+    const page = createPage(validQuery, new Map(), undefined, () => result ? Promise.resolve(response(result)) : Promise.reject(new Error('offline')));
+    vm.runInContext('loadCompletionCount("테스트대원")', page.context);
+    await settle();
+    assert.equal(page.elements.get('completionCountStatus').getAttribute('data-state'), 'error');
+    assert.match(page.elements.get('completionCountDetail').textContent, /출석 등록은 완료/);
+    assert.equal(page.elements.get('completionCountRetry').hidden, false);
+    assert.equal(page.timers.size, 0);
+  }
+});
+
+test('a count already returned with submission renders immediately without another request', () => {
+  const page = createPage(validQuery, new Map());
+  vm.runInContext('loadCompletionCount("테스트대원", 5)', page.context);
+  assert.equal(page.requests.length, 0);
+  assert.equal(page.timers.size, 0);
+  assert.equal(page.elements.get('completionCount').textContent, '5');
+  assert.equal(page.elements.get('completionBadge').hidden, false);
+  assert.equal(page.elements.get('completionCountProgress').hidden, true);
 });
 
 test('briefing is stable for one game and rotates across game dates', () => {
