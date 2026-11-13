@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0d6598">
+  <meta id="themeColor" name="theme-color" content="#f5f0e8">
   <link rel="preconnect" href="https://script.google.com" crossorigin>
   <link rel="dns-prefetch" href="https://script.google.com">
   <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
@@ -12,14 +12,17 @@
   <style>
     :root {
       color-scheme: light;
-      --ink: #183042;
-      --muted: #667784;
-      --line: #d9e2e8;
-      --brand: #1685c5;
-      --brand-dark: #0d6598;
+      --text-size: 18px;
+      font-size: var(--text-size);
+      --ink: #30261e;
+      --muted: #64665e;
+      --line: #d9ddd2;
+      --brand: #945026;
+      --brand-dark: #945026;
+      --tint: #f7e7d2;
       --success: #238636;
       --danger: #b42318;
-      --canvas: #edf5f9;
+      --canvas: #f5f0e8;
     }
 
     * {
@@ -30,12 +33,12 @@
       margin: 0;
       min-height: 100vh;
       min-height: 100dvh;
-      padding: max(10px, env(safe-area-inset-top)) 10px max(16px, env(safe-area-inset-bottom));
-      background:
-        radial-gradient(circle at top right, rgba(22, 133, 197, 0.18), transparent 34%),
-        linear-gradient(180deg, #f8fcff, var(--canvas));
+      padding: max(6px, env(safe-area-inset-top)) 10px max(12px, env(safe-area-inset-bottom));
+      background: var(--canvas);
       color: var(--ink);
-      font-family: "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      line-height: 1.4;
+      -webkit-text-size-adjust: 100%;
     }
 
     .shell {
@@ -46,10 +49,18 @@
     .brand {
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: space-between;
       gap: 8px;
-      margin: 4px 0 10px;
+      margin: 0 2px 6px;
     }
+
+    .brand-name { display: flex; align-items: center; gap: 7px; }
+    .brand-name span { display: block; color: var(--muted); font-size: 0.8rem; font-weight: 500; letter-spacing: 0; }
+    .font-controls { display: flex; align-items: center; gap: 2px; }
+    .font-controls button { width: 44px; min-height: 44px; margin: 0; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: #fffefb; color: var(--ink); box-shadow: none; font-size: 1.15rem; line-height: 1; }
+    .font-controls button:disabled { cursor: default; }
+    .font-controls output { min-width: 2.3em; text-align: center; font-size: 0.8rem; color: var(--muted); }
+    button:focus-visible, select:focus-visible { outline: 3px solid var(--brand); outline-offset: 3px; }
 
     .brand-logo {
       width: 1.45rem;
@@ -59,30 +70,32 @@
 
     h1 {
       margin: 0;
-      font-size: 0.95rem;
+      font-size: 1rem;
       letter-spacing: -0.04em;
     }
 
     .card {
-      overflow: hidden;
-      border: 1px solid rgba(217, 226, 232, 0.9);
+      padding: 12px;
+      border: 1px solid var(--line);
       border-radius: 20px;
-      background: rgba(255, 255, 255, 0.96);
-      box-shadow: 0 18px 45px rgba(42, 75, 94, 0.12);
+      background: #fffefb;
     }
 
     .game-info {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1.65fr) minmax(0, 0.8fr);
+      grid-template-columns: minmax(0, 1.16fr) minmax(0, 1.65fr) minmax(0, 1fr);
       gap: 1px;
       background: var(--line);
-      border-bottom: 1px solid var(--line);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
     }
 
     .game-item {
       min-width: 0;
-      padding: 9px 10px;
-      background: #f7fbfd;
+      padding: 7px 5px;
+      background: var(--canvas);
+      text-align: center;
     }
 
     .game-item.account {
@@ -90,7 +103,9 @@
       display: flex;
       align-items: center;
       border-top: 1px solid var(--line);
-      padding: 12px 14px;
+      padding: 10px 0 0;
+      background: transparent;
+      text-align: left;
     }
 
     .game-item.account .account-info {
@@ -102,12 +117,12 @@
 
     .briefing {
       position: relative;
-      margin: 14px 14px 2px;
-      padding: 20px 18px;
-      border-radius: 14px;
-      background: radial-gradient(circle at top right, #235a6c, transparent 70%), #152d3a;
-      color: #fff;
-      border-left: 4px solid var(--season-accent, #a8dcae);
+      margin: 8px 0;
+      padding: 12px 14px;
+      border: 1.5px solid var(--brand);
+      border-radius: 22px 22px 5px 22px;
+      background: var(--tint);
+      color: var(--ink);
     }
 
     .briefing-label {
@@ -115,26 +130,32 @@
       justify-content: space-between;
       align-items: center;
       gap: 8px;
-      font-size: 0.7rem;
-      color: #c2d4dc;
-      letter-spacing: 0.06em;
+      font-size: 0.78rem;
+      color: var(--brand);
+      font-weight: 700;
     }
 
-    .season-tag { color: var(--season-accent, #a8dcae); font-weight: 700; }
-    .briefing h2 { margin: 12px 0 9px; font-size: clamp(1.3rem, 5.8vw, 1.75rem); letter-spacing: -0.04em; word-break: keep-all; }
-    .briefing p { margin: 0; color: #d7e6ec; font-size: 0.86rem; line-height: 1.6; word-break: keep-all; }
+    .briefing-label > span:last-child { font-size: 0.68rem; letter-spacing: 0.04em; }
+    /* 배너 제목은 글씨 조절에 따라 커지지 않도록 px 기준을 유지합니다. */
+    .briefing h2 { margin: 7px 66px 6px 0; font-size: 30px; line-height: 1.15; letter-spacing: -1.2px; }
+    .briefing h2 span { color: var(--brand); }
+    .briefing p { margin: 0; font-size: 0.88rem; line-height: 1.4; word-break: keep-all; }
+    .club-sticker { position: absolute; right: 13px; top: 48px; padding: 8px 10px; border: 1.5px solid var(--brand); border-radius: 50%; background: #fffefb; color: var(--brand); transform: rotate(9deg); text-align: center; font-size: 0.72rem; line-height: 1.35; }
+    .club-radio { margin: 0 0 8px; padding: 7px 10px; border-radius: 12px; background: var(--canvas); }
+    .club-radio span { color: var(--brand); font-size: 0.78rem; font-weight: 700; }
+    .club-radio p { margin: 2px 0 0; font-size: 0.9rem; line-height: 1.4; word-break: keep-all; }
     .completion-badge { display: inline-block; padding: 5px 12px; margin-top: 10px; border: 1px solid #a7c9b0; border-radius: 20px; color: #246039; font-size: 0.85rem; }
 
     .copy-btn {
       flex: 0 0 auto;
       margin-top: 0;
       margin-left: 10px;
-      width: 32px;
-      height: 32px;
+      width: 44px;
+      height: 44px;
       min-height: 0;
       padding: 0;
       border-radius: 8px;
-      background: rgba(22, 133, 197, 0.1);
+      background: var(--tint);
       color: var(--brand);
       box-shadow: none;
       display: flex;
@@ -150,9 +171,9 @@
 
     .label {
       display: block;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
       color: var(--muted);
-      font-size: 0.76rem;
+      font-size: 0.8rem;
     }
 
     .value {
@@ -160,28 +181,29 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      font-size: 0.88rem;
+      font-size: 0.86rem;
       font-weight: 700;
+      letter-spacing: -0.04em;
     }
 
     form {
-      padding: 12px 14px 14px;
+      padding: 0 0 10px;
     }
 
     .field {
-      margin-bottom: 10px;
+      margin-bottom: 6px;
     }
 
     .field.inline {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
     }
 
     .field label {
       display: block;
       margin-bottom: 7px;
-      font-size: 0.9rem;
+      font-size: 1rem;
       font-weight: 700;
     }
 
@@ -198,14 +220,14 @@
 
     input[type="text"] {
       width: 100%;
-      min-height: 49px;
-      padding: 12px 13px;
-      border: 1px solid #bfcbd3;
+      min-height: 48px;
+      padding: 9px 11px;
+      border: 1px solid #a7afa3;
       border-radius: 11px;
       background: #fff;
       color: var(--ink);
       font: inherit;
-      font-size: 16px;
+      font-size: 1rem;
       outline: none;
     }
 
@@ -216,16 +238,16 @@
 
     input[type="text"]:focus {
       border-color: var(--brand);
-      box-shadow: 0 0 0 3px rgba(22, 133, 197, 0.13);
+      box-shadow: 0 0 0 3px var(--tint);
     }
 
     .check-row {
       display: flex;
       align-items: flex-start;
-      gap: 10px;
-      margin: 9px 0;
-      color: #405463;
-      font-size: 0.9rem;
+      gap: 8px;
+      margin: 6px 0;
+      color: var(--ink);
+      font-size: 0.95rem;
       line-height: 1.45;
     }
 
@@ -242,15 +264,15 @@
     }
 
     .minor-row select {
-      min-height: 38px;
+      min-height: 44px;
       margin-left: auto;
-      padding: 7px 30px 7px 10px;
-      border: 1px solid #bfcbd3;
+      padding: 6px 8px;
+      border: 1px solid #a7afa3;
       border-radius: 9px;
       background: #fff;
       color: var(--ink);
       font: inherit;
-      font-size: 16px;
+      font-size: 1rem;
     }
 
     button {
@@ -258,14 +280,14 @@
       min-height: 48px;
       margin-top: 5px;
       border: 0;
-      border-radius: 12px;
-      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      border-radius: 28px;
+      background: var(--brand);
       color: #fff;
       font: inherit;
       font-size: 1rem;
       font-weight: 800;
       cursor: pointer;
-      box-shadow: 0 9px 20px rgba(13, 101, 152, 0.2);
+      box-shadow: none;
     }
 
     button:disabled {
@@ -275,8 +297,8 @@
 
     .message {
       display: none;
-      margin: 16px 18px 0;
-      padding: 13px;
+      margin: 0 0 8px;
+      padding: 10px;
       border-radius: 11px;
       font-size: 0.9rem;
       line-height: 1.5;
@@ -297,7 +319,7 @@
     }
 
     .message.info {
-      background: #eef7fc;
+      background: var(--tint);
       color: var(--brand-dark);
     }
 
@@ -353,7 +375,7 @@
       position: absolute;
       inset: -4px;
       border-radius: 50%;
-      background: conic-gradient(var(--brand), #63d4ff, var(--brand));
+      background: var(--brand);
       opacity: 0.55;
     }
 
@@ -396,18 +418,18 @@
 
     .count-status {
       padding: 18px 14px;
-      border: 1px solid #b9dbe9;
+      border: 1px solid var(--brand);
       border-radius: 15px;
-      background: #eef8fc;
+      background: var(--tint);
       margin-bottom: 16px;
     }
-    .count-status h3 { margin: 0; font-size: 1.04rem; line-height: 1.5; word-break: keep-all; color: #135c81; }
-    .count-status p { margin: 8px 0 0; font-size: 0.8rem; line-height: 1.6; color: #486779; word-break: keep-all; }
+    .count-status h3 { margin: 0; font-size: 1.04rem; line-height: 1.5; word-break: keep-all; color: var(--brand); }
+    .count-status p { margin: 8px 0 0; font-size: 0.85rem; line-height: 1.6; color: var(--muted); word-break: keep-all; }
     .count-status[data-state="ready"] { background: #f0f8f3; border-color: #bddbc7; }
     .count-status[data-state="ready"] h3 { color: #246039; font-size: 0.82rem; }
     .count-status[data-state="error"] { background: #f5f7f8; border-color: var(--line); }
-    .count-progress { height: 7px; margin-top: 14px; border-radius: 10px; overflow: hidden; background: #d2e7f0; }
-    .count-progress::after { content: ''; display: block; width: 40%; height: 100%; border-radius: inherit; background: #1685c5; animation: count-travel 1.7s ease-in-out infinite; }
+    .count-progress { height: 7px; margin-top: 14px; border-radius: 10px; overflow: hidden; background: #fffefb; }
+    .count-progress::after { content: ''; display: block; width: 40%; height: 100%; border-radius: inherit; background: var(--brand); animation: count-travel 1.7s ease-in-out infinite; }
     @keyframes count-travel {
       from { transform: translateX(-100%); }
       to { transform: translateX(350%); }
@@ -420,8 +442,8 @@
     .completion-info .info-label { display: block; font-size: 0.72rem; margin-bottom: 6px; color: var(--muted); }
     .completion-info strong { font-size: 1.2rem; letter-spacing: -0.03em; }
     .completion-info p { margin: 0; font-size: 0.95rem; line-height: 1.55; word-break: keep-all; }
-    .callsign-card { background: #183b4b; color: #fff; border-color: #183b4b; }
-    .callsign-card .info-label { color: #bad9e5; }
+    .callsign-card { background: var(--canvas); color: var(--ink); }
+    .callsign-card .info-label { color: var(--brand); }
     .completion-actions { position: sticky; bottom: -18px; padding: 8px 0 0; background: #fff; }
     #completionCloseButton.waiting { background: #fff; color: #5a6e7b; border: 1px solid #c7d4dc; box-shadow: none; font-size: 0.88rem; }
     .completion-panel:focus { outline: none; }
@@ -471,13 +493,12 @@
     }
 
     @media (max-width: 360px) {
-      .game-item {
-        padding: 8px;
-      }
-
-      .value {
-        font-size: 0.8rem;
-      }
+      .card { padding: 10px; }
+      .game-item { padding: 7px 3px; }
+      .briefing { padding: 10px; }
+      .briefing h2 { font-size: 27px; margin-right: 60px; }
+      .club-sticker { right: 9px; padding: 7px; }
+      .briefing-label > span:last-child { display: none; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -488,8 +509,15 @@
 <body>
   <main class="shell">
     <header class="brand">
-      <img class="brand-logo" src="./images/team_k_logo.png" alt="Team-K 로고">
-      <h1>Team-K 모바일 출석</h1>
+      <div class="brand-name">
+        <img class="brand-logo" src="./images/team_k_logo.png" alt="Team-K 로고">
+        <h1>TEAM-K<span>모바일 출석</span></h1>
+      </div>
+      <div class="font-controls" role="group" aria-label="글씨 크기 조절">
+        <button id="fontDecrease" type="button" aria-label="글씨 작게">-</button>
+        <output id="fontSizeLabel" aria-live="polite" aria-label="현재 글씨 크기">18</output>
+        <button id="fontIncrease" type="button" aria-label="글씨 크게">+</button>
+      </div>
     </header>
 
     <section class="card">
@@ -508,11 +536,16 @@
         </div>
       </div>
 
-      <section id="briefing" class="briefing" aria-labelledby="operationTitle">
-        <div class="briefing-label"><span>오늘의 작전</span><span id="seasonTag" class="season-tag">TEAM-K</span></div>
-        <h2 id="operationTitle">주말을 사수하라</h2>
-        <p id="radioMessage">본부 수신. 오늘도 매너 플레이!</p>
+      <section id="briefing" class="briefing" aria-labelledby="clubTitle">
+        <div class="briefing-label"><span id="seasonTag">주말 필드 데이</span><span>GOOD WEEKEND</span></div>
+        <h2 id="clubTitle">잘 왔어요.<br><span>오늘도 한 팀!</span></h2>
+        <div class="club-sticker">매너는<br><b>풀장착</b></div>
+        <p id="operationTitle">주말을 사수하라</p>
       </section>
+      <aside class="club-radio" aria-label="오늘의 한 줄">
+        <span>오늘의 한 줄</span>
+        <p id="radioMessage">본부 수신. 오늘도 매너 플레이!</p>
+      </aside>
       <div id="message" class="message" role="status" aria-live="polite"></div>
 
       <form id="attendanceForm">
@@ -522,7 +555,7 @@
         </div>
         <label class="check-row minor-row">
           <input id="minor" type="checkbox">
-          <span>소인을 함께 등록합니다.</span>
+          <span>소인 함께 등록</span>
           <select id="minorCount" aria-label="추가할 소인 수" disabled>
             <option value="1">1명</option>
             <option value="2">2명</option>
@@ -585,6 +618,9 @@
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzPgkd98ZVALSGfY5Z9Q0KbRx1gyo2etlioTR6fpFKmyzO6JbFwQh626L4gCHqtaRxt/exec';
     const PROFILE_KEY = 'teamk_mobile_attendance_profile_v1';
     const PROFILE_COOKIE_KEY = 'teamk_mobile_attendance_name_v1';
+    const FONT_SIZE_KEY = 'teamk_mobile_attendance_font_size_v1';
+    const FONT_SIZES = [16, 18, 20, 22];
+    let fontSize = 18;
     const PROFILE_COOKIE_PATH = `/${window.location.pathname.split('/').filter(Boolean)[0] || ''}`.replace(/\/?$/, '/');
     const query = new URLSearchParams(window.location.search);
     const attendance = {
@@ -596,10 +632,10 @@
     // 문구 교체는 이 정적 데이터만 수정합니다. 게임일 기준으로 자동 순환합니다.
     const FUN_CONTENT = {
       seasons: [
-        { label: '동계 출동', accent: '#b9e2fa', operations: ['동장군도 출석 체크', '겨울 필드 사수 작전', '추위보다 뜨거운 팀워크', '주말을 사수하라'] },
-        { label: '봄 필드 복귀', accent: '#bfe5a0', operations: ['필드에 봄이 왔다', '겨울잠 해제 작전', '봄바람 타고 출동', '스트레스 탈출 작전'] },
-        { label: '여름 보급 작전', accent: '#a7ece2', operations: ['수분 보급 이상 무', '더위 탈출 작전', '그늘에서 작전 회의', '주말 에너지 충전'] },
-        { label: '가을 필드 데이', accent: '#ffd39a', operations: ['가을 필드를 접수하라', '주말을 사수하라', '팀워크 수확 작전', '스트레스 탈출 작전'] }
+        { label: '동계 출동', accent: '#415b84', tint: '#e2eaf7', canvas: '#eff2f7', ink: '#1d2b40', operations: ['동장군도 출석 체크', '겨울 필드 사수 작전', '추위보다 뜨거운 팀워크', '주말을 사수하라'] },
+        { label: '봄 필드 복귀', accent: '#386440', tint: '#e7efcc', canvas: '#f4f6eb', ink: '#1f3525', operations: ['필드에 봄이 왔다', '겨울잠 해제 작전', '봄바람 타고 출동', '스트레스 탈출 작전'] },
+        { label: '여름 보급 작전', accent: '#126b78', tint: '#d8f0ed', canvas: '#edf6f5', ink: '#14343b', operations: ['수분 보급 이상 무', '더위 탈출 작전', '그늘에서 작전 회의', '주말 에너지 충전'] },
+        { label: '가을 필드 데이', accent: '#945026', tint: '#f7e7d2', canvas: '#f5f0e8', ink: '#30261e', operations: ['가을 필드를 접수하라', '주말을 사수하라', '팀워크 수확 작전', '스트레스 탈출 작전'] }
       ],
       radio: ['본부 수신. 오늘도 매너 플레이!', '엄폐는 확실하게, 인사는 반갑게!', '탄창은 가득, 걱정은 빈칸!', '히트는 크게, 웃음은 더 크게!', '장비 점검 완료? 재미도 챙기세요.', '오늘의 적은 쌓인 스트레스!', '게임 끝나면 우리 모두 같은 편!', '명중보다 중요한 건 함께하는 주말!'],
       callsigns: ['엄폐 전문가', '탄창 마스터', '필드 단골', '팀워크 대장', '매너 에이스', '주말 수호자', '보급의 달인', '작전 참모'],
@@ -620,14 +656,47 @@
     }
 
     function showBriefing() {
-      const month = Number(attendance.date.slice(5, 7));
-      const day = Math.abs(Math.floor(Date.parse(attendance.date + 'T00:00:00Z') / 86400000) || 0);
+      const gameDate = new Date(attendance.date + 'T00:00:00Z');
+      const date = Number.isNaN(gameDate.getTime()) ? new Date() : gameDate;
+      const month = date.getUTCMonth() + 1;
+      const day = Math.abs(Math.floor(date.getTime() / 86400000));
       const season = FUN_CONTENT.seasons[month >= 3 && month <= 5 ? 1 : month >= 6 && month <= 8 ? 2 : month >= 9 && month <= 11 ? 3 : 0];
       document.getElementById('seasonTag').textContent = season.label;
-      document.getElementById('briefing').style.setProperty('--season-accent', season.accent);
+      const style = document.documentElement.style;
+      style.setProperty('--brand', season.accent);
+      style.setProperty('--brand-dark', season.accent);
+      style.setProperty('--tint', season.tint);
+      style.setProperty('--canvas', season.canvas);
+      style.setProperty('--ink', season.ink);
+      document.getElementById('themeColor').setAttribute('content', season.canvas);
       document.getElementById('operationTitle').textContent = season.operations[day % season.operations.length];
       document.getElementById('radioMessage').textContent = FUN_CONTENT.radio[day % FUN_CONTENT.radio.length];
     }
+
+    function applyFontSize(size, persist) {
+      fontSize = FONT_SIZES.includes(size) ? size : 18;
+      document.documentElement.style.setProperty('--text-size', `${fontSize}px`);
+      document.getElementById('fontSizeLabel').textContent = String(fontSize);
+      document.getElementById('fontSizeLabel').setAttribute('aria-label', `현재 글씨 크기 ${fontSize}픽셀`);
+      document.getElementById('fontDecrease').disabled = fontSize === FONT_SIZES[0];
+      document.getElementById('fontIncrease').disabled = fontSize === FONT_SIZES[FONT_SIZES.length - 1];
+      if (persist) {
+        try { localStorage.setItem(FONT_SIZE_KEY, String(fontSize)); } catch (error) {
+          // 저장소가 차단되어도 현재 화면의 글씨 조절은 동작합니다.
+        }
+      }
+    }
+
+    function restoreFontSize() {
+      let saved = 18;
+      try { saved = Number(localStorage.getItem(FONT_SIZE_KEY)); } catch (error) {
+        // 저장소를 사용할 수 없으면 기본 크기를 유지합니다.
+      }
+      applyFontSize(saved, false);
+    }
+
+    document.getElementById('fontDecrease').addEventListener('click', () => applyFontSize(Math.max(16, fontSize - 2), true));
+    document.getElementById('fontIncrease').addEventListener('click', () => applyFontSize(Math.min(22, fontSize + 2), true));
 
     const form = document.getElementById('attendanceForm');
     const dom = {
@@ -791,6 +860,7 @@
     }
 
     function initialize() {
+      restoreFontSize();
       readSavedProfile();
       showBriefing();
       if (!attendance.spreadsheetId || !attendance.date || !attendance.token) {

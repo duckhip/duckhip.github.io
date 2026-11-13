@@ -15,6 +15,7 @@ test('shows the Team-K image in the attendance header', () => {
 function createElement() {
   const listeners = {};
   const attributes = {};
+  const properties = {};
   return {
     checked: false,
     classList: {
@@ -29,7 +30,10 @@ function createElement() {
     scrollIntoView() {},
     textContent: '',
     value: '',
-    style: { setProperty() {} },
+    style: {
+      setProperty(key, value) { properties[key] = value; },
+      getPropertyValue(key) { return properties[key]; }
+    },
     setAttribute(key, value) { attributes[key] = value; },
     getAttribute(key) { return attributes[key]; },
     addEventListener(type, listener) {
@@ -52,6 +56,7 @@ function createPage(search, values, cookies = { value: '' }, responder) {
     setItem(key, value) { values.set(key, value); }
   };
   const document = {
+    documentElement: createElement(),
     getElementById(id) {
       if (!elements.has(id)) elements.set(id, createElement());
       return elements.get(id);
@@ -277,4 +282,59 @@ test('briefing is stable for one game and rotates across game dates', () => {
   assert.equal(one.elements.get('operationTitle').textContent, two.elements.get('operationTitle').textContent);
   assert.notEqual(one.elements.get('operationTitle').textContent, next.elements.get('operationTitle').textContent);
   assert.equal(one.requests.length + two.requests.length + next.requests.length, 0);
+});
+
+test('all twelve game months select the seasonal light palette without requests', () => {
+  const colors = ['#415b84', '#415b84', '#386440', '#386440', '#386440', '#126b78', '#126b78', '#126b78', '#945026', '#945026', '#945026', '#415b84'];
+  colors.forEach((color, month) => {
+    const page = createPage(`?date=2026-${String(month + 1).padStart(2, '0')}-15`, new Map());
+    vm.runInContext('showBriefing()', page.context);
+    const style = page.context.document.documentElement.style;
+    assert.equal(style.getPropertyValue('--brand'), color);
+    assert.equal(page.elements.get('themeColor').getAttribute('content'), style.getPropertyValue('--canvas'));
+    assert.equal(page.requests.length, 0);
+  });
+  assert.match(html, /color-scheme: light/);
+});
+
+test('font controls default to 18px, clamp to 16-22px, and persist independently of the name', () => {
+  const values = new Map([['teamk_mobile_attendance_profile_v1', JSON.stringify({ name: '테스트대원' })]]);
+  const page = createPage(validQuery, values);
+  vm.runInContext('restoreFontSize()', page.context);
+  const size = () => page.context.document.documentElement.style.getPropertyValue('--text-size');
+  assert.equal(size(), '18px');
+  for (let i = 0; i < 5; i++) page.elements.get('fontIncrease').dispatch('click');
+  assert.equal(size(), '22px');
+  assert.equal(page.elements.get('fontIncrease').disabled, true);
+  const next = createPage(validQuery, values);
+  vm.runInContext('restoreFontSize(); readSavedProfile()', next.context);
+  assert.equal(next.elements.get('fontSizeLabel').textContent, '22');
+  assert.equal(next.elements.get('name').value, '테스트대원');
+  for (let i = 0; i < 5; i++) page.elements.get('fontDecrease').dispatch('click');
+  assert.equal(size(), '16px');
+  assert.equal(page.elements.get('fontDecrease').disabled, true);
+  assert.equal(page.elements.get('fontIncrease').disabled, false);
+  assert.equal(page.requests.length + next.requests.length, 0);
+});
+
+test('unavailable storage and invalid font preferences do not break font controls', () => {
+  for (const value of ['invalid', '0', '19', '100', '']) {
+    const page = createPage('', new Map([['teamk_mobile_attendance_font_size_v1', value]]));
+    vm.runInContext('restoreFontSize()', page.context);
+    assert.equal(page.elements.get('fontSizeLabel').textContent, '18');
+  }
+  const page = createPage('', new Map());
+  page.context.localStorage.getItem = () => { throw new Error('blocked'); };
+  page.context.localStorage.setItem = () => { throw new Error('blocked'); };
+  vm.runInContext('restoreFontSize()', page.context);
+  page.elements.get('fontIncrease').dispatch('click');
+  assert.equal(page.elements.get('fontSizeLabel').textContent, '20');
+});
+
+test('club banner stays independent of text size and the preview is removed', () => {
+  assert.match(html, /id="clubTitle">잘 왔어요\.<br><span>오늘도 한 팀!/);
+  assert.match(html, /\.briefing h2 \{[^}]*font-size: 30px/);
+  assert.match(html, /id="fontDecrease"[^>]*aria-label="글씨 작게"/);
+  assert.match(html, /id="fontIncrease"[^>]*aria-label="글씨 크게"/);
+  assert.ok(!fs.existsSync(__dirname + '/ui-preview/index.html'));
 });
