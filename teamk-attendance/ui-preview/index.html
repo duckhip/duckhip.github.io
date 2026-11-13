@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+  <title>Team-K 출석 UI 테스트 · 실제 등록 없음</title>
+</head>
+<body>
+<header class="preview-toolbar">
+  <div><h1>Team-K 출석 UI 테스트</h1><p>실제 출석은 등록되지 않습니다. 가명으로 테스트하세요.</p></div>
+  <div class="preview-controls">
+    <label>시안<select id="previewVariant"><option>필드 패스</option><option selected>작전 콘솔</option><option>주말 클럽</option></select></label>
+    <label>계절<select id="previewSeason"><option value="spring">봄 · 세이지 그린</option><option value="summer">여름 · 라군 블루</option><option value="autumn" selected>가을 · 샌드 앰버</option><option value="winter">겨울 · 프로스트 네이비</option></select></label>
+    <label>화면 상태<select id="previewScreen"><option value="entry">출석 입력</option><option value="waiting">횟수 확인 중</option><option value="done">완료 · 예시 5회</option></select></label>
+    <label>화면 밝기<select id="previewAppearance"><option value="light">밝게</option><option value="dark">어둡게</option><option value="auto">기기 설정</option></select></label>
+  </div>
+  <p class="preview-notice">등록 버튼: 2초 동안 조회 화면을 보여준 뒤 예시 결과를 표시합니다. 이름·출석 정보는 저장하거나 전송하지 않습니다.</p>
+  <p class="preview-size">PC: iPhone 17 Pro 기준 402 × 874 CSS px · 모바일: 기기 폭에 맞춤</p>
+</header>
+<noscript>이 테스트 화면은 JavaScript를 켜야 조작할 수 있습니다.</noscript>
+<div id="teamk-seasonal-directions" aria-label="Team-K 계절별 출석 디자인">
+  <div class="preview-device" aria-label="출석 화면 디자인 시안">
+    <section data-variant="필드 패스" aria-label="필드 패스 시안" hidden>
+      <div class="tk-stage">
+        <article class="tk-phone tk-pass" aria-label="필드 패스 모바일 화면">
+          <header class="tk-brand"><b>TEAM-K<span>FIELD CLUB</span></b><span>모바일 출석</span></header>
+          <div class="tk-game"><div><span>게임일자</span><strong data-game-date>11.15 일</strong></div><div><span>필드명</span><strong>베이스캠프-양주</strong></div><div><span>게임비</span><strong>35,000원</strong></div></div>
+          <div class="tk-entry">
+            <section class="tk-hero tk-ticket">
+              <div class="tk-eyebrow"><span data-season-label>가을 작전</span><span>FIELD PASS / 2026</span></div>
+              <h2 data-pass-title>오늘도,<br>한 팀으로.</h2>
+              <p data-season-copy>선선한 바람, 뜨거운 팀워크.</p>
+              <div class="tk-ticket-foot"><span>주말 출동 허가증</span><span class="tk-bars" aria-hidden="true"></span></div>
+            </section>
+            <button class="tk-radio cursor-interaction" type="button"><span class="tk-radio-label">오늘의 무전</span><span class="tk-radio-text">명중률보다 출석률, 오늘도 상승.</span><span aria-hidden="true">↻</span></button>
+            <form class="tk-form">
+              <label class="tk-name-label">성명 <span>필수</span><input name="name" autocomplete="off" placeholder="이름을 입력해 주세요" maxlength="30" required></label>
+              <div class="tk-minor"><label><input type="checkbox" name="minor"> 소인 함께 등록</label><select aria-label="소인 인원" disabled><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+              <button class="tk-submit cursor-interaction" type="button">출석 등록 <span aria-hidden="true">↗</span></button>
+            </form>
+            <details class="tk-account"><summary class="cursor-interaction">입금계좌 확인</summary><p>은행 · 계좌번호 · 예금주<br><small>실제 화면에서는 기존 계좌 정보 표시</small></p></details>
+          </div>
+          <section class="tk-finish" aria-live="polite" hidden>
+            <span class="tk-result-kicker">CHECK-IN SAVED</span><h2>출석은 저장됐어요.</h2>
+            <div class="tk-result-area"><span class="tk-result-label">올해 나의 출석 기록</span><div class="tk-result-value">5<small>번째 출동</small></div><p class="tk-result-copy">다섯 번의 주말, 다섯 번의 팀워크.</p><div class="tk-wait-track" aria-hidden="true"><span></span></div></div>
+            <div class="tk-brief"><span>오늘의 콜사인</span><strong>주말 사수</strong><p>오늘의 미션 · 처음 만난 팀원에게 먼저 인사하기.</p></div>
+            <div class="tk-stamp">TEAM-K <b data-stamp>가을 출동 완료</b> 2026</div>
+            <button class="tk-return cursor-interaction" type="button">처음 화면 보기</button>
+          </section>
+          <footer class="tk-footer">PLAY FAIR. STAY TOGETHER.</footer>
+        </article>
+      </div>
+    </section>
+    <section data-variant="작전 콘솔" aria-label="작전 콘솔 시안">
+      <div class="tk-stage">
+        <article class="tk-phone tk-console" aria-label="작전 콘솔 모바일 화면">
+          <header class="tk-brand"><b>TEAM-K<span>FIELD CONTROL</span></b><span>모바일 출석</span></header>
+          <div class="tk-game"><div><span>게임일자</span><strong data-game-date>11.15 일</strong></div><div><span>필드명</span><strong>베이스캠프-양주</strong></div><div><span>게임비</span><strong>35,000원</strong></div></div>
+          <div class="tk-entry">
+            <section class="tk-hero tk-operation">
+              <div class="tk-eyebrow"><span data-season-label>가을 작전</span><span>BRIEFING</span></div>
+              <span class="tk-opcode">OP. <b data-operation-code>AUTUMN</b></span>
+              <h2>주말을<br><em>사수하라.</em></h2>
+              <p data-season-copy>선선한 바람, 뜨거운 팀워크.</p>
+              <span class="tk-corner" aria-hidden="true"></span>
+            </section>
+            <form class="tk-form">
+              <div class="tk-section-label"><b>CHECK-IN</b><span>대원 등록</span></div>
+              <label class="tk-name-label">성명 <span>필수</span><input name="name" autocomplete="off" placeholder="이름을 입력해 주세요" maxlength="30" required></label>
+              <div class="tk-minor"><label><input type="checkbox" name="minor"> 소인 함께 등록</label><select aria-label="소인 인원" disabled><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+              <button class="tk-submit cursor-interaction" type="button">출석 등록 <span aria-hidden="true">↗</span></button>
+            </form>
+            <button class="tk-radio cursor-interaction" type="button"><span class="tk-radio-label">본부 수신</span><span class="tk-radio-text">오늘의 목표: 멋진 플레이, 깔끔한 히트콜.</span><span aria-hidden="true">↻</span></button>
+            <details class="tk-account"><summary class="cursor-interaction">입금계좌 확인</summary><p>은행 · 계좌번호 · 예금주<br><small>실제 화면에서는 기존 계좌 정보 표시</small></p></details>
+          </div>
+          <section class="tk-finish" aria-live="polite" hidden>
+            <span class="tk-result-kicker">CHECK-IN / CONFIRMED</span><h2>합류를 확인했어요.</h2>
+            <div class="tk-result-area"><span class="tk-result-label">올해 나의 출석 기록</span><div class="tk-result-value">5<small>번째 출동</small></div><p class="tk-result-copy">다섯 번의 주말, 다섯 번의 팀워크.</p><div class="tk-wait-track" aria-hidden="true"><span></span></div></div>
+            <div class="tk-brief"><span>오늘의 콜사인</span><strong>주말 사수</strong><p>오늘의 미션 · 처음 만난 팀원에게 먼저 인사하기.</p></div>
+            <div class="tk-stamp">TEAM-K <b data-stamp>가을 출동 완료</b> 2026</div>
+            <button class="tk-return cursor-interaction" type="button">처음 화면 보기</button>
+          </section>
+          <footer class="tk-footer">PLAY FAIR. STAY TOGETHER.</footer>
+        </article>
+      </div>
+    </section>
+    <section data-variant="주말 클럽" aria-label="주말 클럽 시안" hidden>
+      <div class="tk-stage">
+        <article class="tk-phone tk-club" aria-label="주말 클럽 모바일 화면">
+          <header class="tk-brand"><b>TEAM-K<span>WEEKEND PEOPLE</span></b><span>모바일 출석</span></header>
+          <div class="tk-game"><div><span>게임일자</span><strong data-game-date>11.15 일</strong></div><div><span>필드명</span><strong>베이스캠프-양주</strong></div><div><span>게임비</span><strong>35,000원</strong></div></div>
+          <div class="tk-entry">
+            <section class="tk-hero tk-poster">
+              <div class="tk-eyebrow"><span data-season-label>가을 작전</span><span>GOOD WEEKEND</span></div>
+              <h2>잘 왔어요.<br><span>오늘도 한 팀!</span></h2>
+              <div class="tk-sticker">매너는<br><b>풀장착</b></div>
+              <p data-season-copy>선선한 바람, 뜨거운 팀워크.</p>
+            </section>
+            <button class="tk-radio cursor-interaction" type="button"><span class="tk-radio-label">오늘의 한 줄</span><span class="tk-radio-text">장비는 풀세팅. 체력은 체험판.</span><span aria-hidden="true">↻</span></button>
+            <form class="tk-form">
+              <label class="tk-name-label">성명 <span>필수</span><input name="name" autocomplete="off" placeholder="이름을 입력해 주세요" maxlength="30" required></label>
+              <div class="tk-minor"><label><input type="checkbox" name="minor"> 소인 함께 등록</label><select aria-label="소인 인원" disabled><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+              <button class="tk-submit cursor-interaction" type="button">출석 등록 <span aria-hidden="true">↗</span></button>
+            </form>
+            <details class="tk-account"><summary class="cursor-interaction">입금계좌 확인</summary><p>은행 · 계좌번호 · 예금주<br><small>실제 화면에서는 기존 계좌 정보 표시</small></p></details>
+          </div>
+          <section class="tk-finish" aria-live="polite" hidden>
+            <span class="tk-result-kicker">WELCOME TO THE FIELD</span><h2>오늘도 한 팀 완성!</h2>
+            <div class="tk-result-area"><span class="tk-result-label">올해 나의 출석 기록</span><div class="tk-result-value">5<small>번째 출동</small></div><p class="tk-result-copy">다섯 번의 주말, 다섯 번의 팀워크.</p><div class="tk-wait-track" aria-hidden="true"><span></span></div></div>
+            <div class="tk-brief"><span>오늘의 콜사인</span><strong>주말 사수</strong><p>오늘의 미션 · 처음 만난 팀원에게 먼저 인사하기.</p></div>
+            <div class="tk-stamp">TEAM-K <b data-stamp>가을 출동 완료</b> 2026</div>
+            <button class="tk-return cursor-interaction" type="button">처음 화면 보기</button>
+          </section>
+          <footer class="tk-footer">PLAY FAIR. STAY TOGETHER.</footer>
+        </article>
+      </div>
+    </section>
+  </div>
+</div>
+<style>
+  #teamk-seasonal-directions { --tk-accent: #945026; --tk-tint: #f7e7d2; --tk-night: #dcb18a; --tk-dark-tint: #352920; --tk-sheet: #f5f0e8; --tk-deep: #30261e; }
+  #teamk-seasonal-directions .tk-preview-label { font: 12px/1.5 -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif; margin-bottom: 12px; color: light-dark(#65635e,#bab7b1); padding-right: 90px; }
+  #teamk-seasonal-directions .tk-stage { min-height: 880px; padding: 24px 8px; display: flex; justify-content: center; align-items: start; box-sizing: border-box; }
+  #teamk-seasonal-directions .tk-phone { --tk-ink: light-dark(#252b27,#eeeee9); --tk-muted: light-dark(#62695f,#b8c1b8); --tk-surface: light-dark(#fffefb,#202722); --tk-line: light-dark(#d9ddd2,#465046); --tk-active: light-dark(var(--tk-accent),var(--tk-night)); --tk-soft: light-dark(var(--tk-tint),var(--tk-dark-tint)); width: 390px; max-width: 100%; box-sizing: border-box; background: light-dark(var(--tk-sheet),#171d19); color: var(--tk-ink); border: 1px solid var(--tk-line); border-radius: 28px; padding: 22px 20px 16px; box-shadow: 0 10px 26px #00000012; font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; font-size: 14px; line-height: 1.5; }
+  #teamk-seasonal-directions .tk-phone * { box-sizing: border-box; }
+  #teamk-seasonal-directions .tk-phone [hidden] { display: none !important; }
+  #teamk-seasonal-directions .tk-phone h2, #teamk-seasonal-directions .tk-phone p { margin: 0; }
+  #teamk-seasonal-directions .tk-brand { display: flex; justify-content: space-between; align-items: center; margin-bottom: 19px; }
+  #teamk-seasonal-directions .tk-brand b { font-size: 17px; letter-spacing: -.7px; font-weight: 900; line-height: 1.15; }
+  #teamk-seasonal-directions .tk-brand b span { display: block; font-size: 8px; letter-spacing: 1.8px; font-weight: 600; margin-top: 4px; }
+  #teamk-seasonal-directions .tk-brand > span { font-size: 11px; color: var(--tk-muted); }
+  #teamk-seasonal-directions .tk-game { display: grid; grid-template-columns: 1fr 1.43fr 1fr; border-radius: 12px; padding: 12px 0; margin-bottom: 16px; background: var(--tk-surface); border: 1px solid var(--tk-line); }
+  #teamk-seasonal-directions .tk-game > div { text-align: center; padding: 0 3px; }
+  #teamk-seasonal-directions .tk-game > div + div { border-left: 1px solid var(--tk-line); }
+  #teamk-seasonal-directions .tk-game span { display: block; font-size: 10px; color: var(--tk-muted); margin-bottom: 4px; }
+  #teamk-seasonal-directions .tk-game strong { display: block; font-size: 12px; letter-spacing: -.6px; font-weight: 700; white-space: nowrap; }
+  #teamk-seasonal-directions .tk-hero { position: relative; padding: 20px; color: var(--tk-active); background: var(--tk-soft); }
+  #teamk-seasonal-directions .tk-eyebrow { display: flex; justify-content: space-between; gap: 8px; font-size: 10px; font-weight: 700; letter-spacing: .6px; margin-bottom: 20px; }
+  #teamk-seasonal-directions .tk-hero h2 { font-size: 35px; font-weight: 850; line-height: 1.16; letter-spacing: -1.8px; }
+  #teamk-seasonal-directions .tk-hero > p { margin-top: 12px; font-size: 12px; font-weight: 500; word-break: keep-all; }
+  #teamk-seasonal-directions .tk-ticket { border-radius: 16px 16px 0 0; }
+  #teamk-seasonal-directions .tk-ticket-foot { border-top: 1px dashed currentColor; margin: 20px -20px -20px; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 10px; position: relative; }
+  #teamk-seasonal-directions .tk-ticket-foot::before, #teamk-seasonal-directions .tk-ticket-foot::after { content: ''; width: 12px; height: 12px; border-radius: 50%; background: light-dark(var(--tk-sheet),#171d19); position: absolute; top: -6px; }
+  #teamk-seasonal-directions .tk-ticket-foot::before { left: -6px; } #teamk-seasonal-directions .tk-ticket-foot::after { right: -6px; }
+  #teamk-seasonal-directions .tk-bars { display: block; width: 70px; height: 17px; background: repeating-linear-gradient(90deg,currentColor 0 2px,transparent 2px 4px,currentColor 4px 5px,transparent 5px 8px); opacity: .65; }
+  #teamk-seasonal-directions .tk-phone button { font: inherit; }
+  #teamk-seasonal-directions .tk-radio { display: grid; grid-template-columns: 1fr auto; gap: 3px 6px; text-align: left; width: 100%; background: transparent; color: var(--tk-ink); padding: 14px 0; border: none; margin-bottom: 2px; min-height: 66px; }
+  #teamk-seasonal-directions .tk-radio-label { color: var(--tk-active); font-size: 10px; font-weight: 700; }
+  #teamk-seasonal-directions .tk-radio-text { grid-row: 2; font-size: 12px; word-break: keep-all; }
+  #teamk-seasonal-directions .tk-radio > span:last-child { grid-column: 2; grid-row: 1 / 3; align-self: center; font-size: 22px; color: var(--tk-active); }
+  #teamk-seasonal-directions .tk-form { margin: 0; }
+  #teamk-seasonal-directions .tk-name-label { display: block; font-size: 12px; font-weight: 700; }
+  #teamk-seasonal-directions .tk-name-label > span { font-size: 10px; color: var(--tk-muted); margin-left: 4px; font-weight: 400; }
+  #teamk-seasonal-directions .tk-name-label > input { display: block; width: 100%; border: 1px solid var(--tk-line); border-radius: 12px; background: var(--tk-surface); color: var(--tk-ink); padding: 13px 14px; margin-top: 7px; height: 50px; font: inherit; font-size: 16px; font-weight: 400; }
+  #teamk-seasonal-directions .tk-name-label > input::placeholder { color: var(--tk-muted); font-size: 14px; }
+  #teamk-seasonal-directions .tk-minor { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 8px 0 12px; min-height: 44px; }
+  #teamk-seasonal-directions .tk-minor label { display: flex; align-items: center; gap: 8px; font-size: 12px; min-height: 44px; }
+  #teamk-seasonal-directions .tk-minor input { width: 18px; height: 18px; accent-color: var(--tk-active); margin: 0; }
+  #teamk-seasonal-directions .tk-minor select { border-radius: 8px; height: 40px; padding: 4px 8px; color: var(--tk-ink); background: var(--tk-surface); border: 1px solid var(--tk-line); font-size: 16px; }
+  #teamk-seasonal-directions .tk-minor select:disabled { opacity: .5; }
+  #teamk-seasonal-directions .tk-submit, #teamk-seasonal-directions .tk-return { width: 100%; min-height: 50px; border: none; border-radius: 12px; padding: 13px 16px; background: var(--tk-active); color: light-dark(#fff,var(--tk-deep)); font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 14px; }
+  #teamk-seasonal-directions .tk-submit:active { transform: translateY(1px); }
+  #teamk-seasonal-directions .tk-submit > span { font-size: 20px; }
+  #teamk-seasonal-directions .tk-account { margin-top: 10px; color: var(--tk-muted); font-size: 11px; }
+  #teamk-seasonal-directions .tk-account summary { padding: 12px 0; min-height: 44px; }
+  #teamk-seasonal-directions .tk-account p { padding: 0 0 10px; line-height: 1.7; }
+  #teamk-seasonal-directions .tk-footer { border-top: 1px solid var(--tk-line); padding-top: 12px; text-align: center; font-size: 8px; letter-spacing: 1.7px; color: var(--tk-muted); }
+  #teamk-seasonal-directions .tk-console { background: light-dark(#e9ede7,#111a15); border-radius: 12px; }
+  #teamk-seasonal-directions .tk-console .tk-game { border-radius: 3px; background: transparent; }
+  #teamk-seasonal-directions .tk-operation { background: var(--tk-deep); color: var(--tk-night); padding: 22px; border-radius: 3px; }
+  #teamk-seasonal-directions .tk-operation .tk-eyebrow { margin-bottom: 14px; color: #e5e9df; }
+  #teamk-seasonal-directions .tk-opcode { font-family: ui-monospace, monospace; font-size: 11px; color: var(--tk-night); }
+  #teamk-seasonal-directions .tk-operation h2 { color: #f6f4ec; font-size: 36px; margin-top: 8px; }
+  #teamk-seasonal-directions .tk-operation em { font-style: normal; color: var(--tk-night); }
+  #teamk-seasonal-directions .tk-corner { position: absolute; right: 22px; bottom: 26px; width: 26px; height: 26px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; }
+  #teamk-seasonal-directions .tk-operation > p { padding-right: 25px; }
+  #teamk-seasonal-directions .tk-section-label { display: flex; justify-content: space-between; border-bottom: 1px solid var(--tk-line); padding: 16px 0 8px; margin-bottom: 12px; font-size: 10px; color: var(--tk-muted); }
+  #teamk-seasonal-directions .tk-section-label b { color: var(--tk-active); letter-spacing: 1px; }
+  #teamk-seasonal-directions .tk-console .tk-name-label > input, #teamk-seasonal-directions .tk-console .tk-submit { border-radius: 4px; }
+  #teamk-seasonal-directions .tk-console .tk-radio { border-bottom: 1px solid var(--tk-line); margin: 4px 0 0; }
+  #teamk-seasonal-directions .tk-club { background: var(--tk-surface); border-radius: 30px; }
+  #teamk-seasonal-directions .tk-club .tk-game { background: light-dark(var(--tk-sheet),#171d19); border: none; border-radius: 16px; }
+  #teamk-seasonal-directions .tk-poster { border: 1.5px solid var(--tk-active); border-radius: 22px 22px 5px 22px; padding: 20px 16px 18px; }
+  #teamk-seasonal-directions .tk-poster h2 { font-size: 30px; line-height: 1.3; color: var(--tk-ink); letter-spacing: -1.5px; }
+  #teamk-seasonal-directions .tk-poster h2 > span { color: var(--tk-active); }
+  #teamk-seasonal-directions .tk-poster .tk-eyebrow { margin-bottom: 15px; }
+  #teamk-seasonal-directions .tk-poster > p { max-width: 75%; }
+  #teamk-seasonal-directions .tk-sticker { position: absolute; right: 14px; top: 52px; padding: 8px 10px; background: var(--tk-surface); border: 1.5px solid var(--tk-active); border-radius: 50%; transform: rotate(9deg); font-size: 9px; text-align: center; line-height: 1.4; }
+  #teamk-seasonal-directions .tk-sticker b { font-size: 11px; }
+  #teamk-seasonal-directions .tk-club .tk-submit { border-radius: 40px; }
+  #teamk-seasonal-directions .tk-club .tk-radio { margin: 12px 0 18px; padding: 11px 14px; background: var(--tk-soft); border-radius: 14px; }
+  #teamk-seasonal-directions .tk-finish { padding: 12px 0 20px; }
+  #teamk-seasonal-directions .tk-result-kicker { font-size: 10px; color: var(--tk-active); letter-spacing: 1px; font-weight: 700; }
+  #teamk-seasonal-directions .tk-finish > h2 { font-size: 25px; line-height: 1.35; letter-spacing: -1px; font-weight: 800; margin: 8px 0 20px; }
+  #teamk-seasonal-directions .tk-result-area { padding: 22px; border-radius: 18px; background: var(--tk-soft); color: var(--tk-active); }
+  #teamk-seasonal-directions .tk-result-label { font-size: 13px; font-weight: 700; line-height: 1.65; }
+  #teamk-seasonal-directions .tk-result-value { font-size: 76px; font-weight: 900; line-height: 1.15; margin-top: 8px; letter-spacing: -4px; }
+  #teamk-seasonal-directions .tk-result-value small { font-size: 17px; letter-spacing: -.5px; margin-left: 12px; }
+  #teamk-seasonal-directions .tk-result-copy { font-size: 12px; margin-top: 12px !important; line-height: 1.7; word-break: keep-all; }
+  #teamk-seasonal-directions .tk-wait-track { margin-top: 20px; height: 6px; border-radius: 10px; background: light-dark(#ffffff99,#ffffff18); overflow: hidden; display: none; }
+  #teamk-seasonal-directions .tk-wait-track span { display: block; height: 100%; width: 45%; background: var(--tk-active); border-radius: inherit; }
+  #teamk-seasonal-directions .tk-brief { margin-top: 18px; padding: 18px; border: 1px solid var(--tk-line); border-radius: 14px; }
+  #teamk-seasonal-directions .tk-brief > span { display: block; font-size: 11px; color: var(--tk-muted); }
+  #teamk-seasonal-directions .tk-brief > strong { display: block; font-size: 22px; margin: 6px 0 10px; letter-spacing: -.6px; }
+  #teamk-seasonal-directions .tk-brief p { font-size: 13px; line-height: 1.75; word-break: keep-all; }
+  #teamk-seasonal-directions .tk-stamp { width: max-content; max-width: 100%; margin: 20px auto; padding: 8px 18px; text-align: center; border: 2px solid var(--tk-active); border-radius: 8px; transform: rotate(-3deg); color: var(--tk-active); font-size: 9px; letter-spacing: 1px; }
+  #teamk-seasonal-directions .tk-stamp b { display: block; font-size: 17px; margin: 3px 0; letter-spacing: -.5px; }
+  #teamk-seasonal-directions .tk-return { background: transparent; color: var(--tk-muted); border: 1px solid var(--tk-line); }
+  #teamk-seasonal-directions [data-screen="waiting"] .tk-result-value, #teamk-seasonal-directions [data-screen="waiting"] .tk-stamp { display: none; }
+  #teamk-seasonal-directions [data-screen="waiting"] .tk-wait-track { display: block; }
+  #teamk-seasonal-directions [data-screen="waiting"] .tk-result-label { font-size: 21px; line-height: 1.5; }
+  #teamk-seasonal-directions .tk-finish.tk-arrive .tk-stamp { animation: tk-stamp-in 260ms ease-out both; }
+  @keyframes tk-stamp-in { from { opacity: 0; transform: scale(1.13) rotate(-7deg); } to { opacity: 1; transform: scale(1) rotate(-3deg); } }
+  @media (max-width: 400px) { #teamk-seasonal-directions .tk-stage { padding: 12px 0; min-height: 940px; } #teamk-seasonal-directions .tk-phone { padding: 18px 14px 14px; } #teamk-seasonal-directions .tk-game strong { font-size: 11px; } #teamk-seasonal-directions .tk-sticker { top: 50px; right: 10px; } #teamk-seasonal-directions .tk-poster h2 { font-size: 28px; } }
+  @media (prefers-reduced-motion: reduce) { #teamk-seasonal-directions .tk-phone *, #teamk-seasonal-directions .tk-phone *::before, #teamk-seasonal-directions .tk-phone *::after { animation: none !important; transition: none !important; } }
+  :root { color-scheme: light; font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; background: light-dark(#f2f3f1,#121714); color: light-dark(#253129,#ecf0eb); }
+  body { margin: 0; padding: 24px; display: grid; grid-template-columns: minmax(220px,310px) 414px; gap: 32px; justify-content: center; align-items: start; }
+  [hidden] { display: none !important; }
+  .preview-toolbar { padding: 8px 0; }
+  .preview-toolbar h1 { margin: 0 0 10px; font-size: 21px; letter-spacing: -.6px; }
+  .preview-toolbar p { margin: 0; font-size: 13px; line-height: 1.7; word-break: keep-all; }
+  .preview-controls { display: grid; gap: 16px; margin: 24px 0; }
+  .preview-controls label { display: block; font-size: 12px; font-weight: 700; }
+  .preview-controls select { display: block; width: 100%; min-height: 44px; margin-top: 6px; padding: 8px 10px; border: 1px solid light-dark(#cbd3ca,#515e54); border-radius: 8px; background: light-dark(#fff,#202a23); color: inherit; font: inherit; font-size: 16px; }
+  .preview-toolbar .preview-notice { padding: 14px; border: 1px solid light-dark(#bacab8,#445b43); border-radius: 10px; background: light-dark(#eaf2e6,#243323); }
+  .preview-toolbar .preview-size { margin-top: 18px; font-size: 12px; color: light-dark(#546451,#bdccba); }
+  #teamk-seasonal-directions .preview-device { width: 402px; height: 874px; overflow-y: auto; overscroll-behavior: contain; border: 6px solid light-dark(#39483d,#637b69); border-radius: 24px; scrollbar-width: none; background: light-dark(#e9ede7,#111a15); }
+  #teamk-seasonal-directions .preview-device::-webkit-scrollbar { display: none; }
+  #teamk-seasonal-directions .tk-stage { min-height: 0; display: block; padding: 0; }
+  #teamk-seasonal-directions .tk-phone { width: 100%; max-width: none; min-height: 874px; border: 0; border-radius: 0; box-shadow: none; }
+  #teamk-seasonal-directions .tk-phone button { cursor: pointer; }
+  #teamk-seasonal-directions .tk-wait-track span { animation: preview-count-wait 1.7s ease-in-out infinite; }
+  @keyframes preview-count-wait { from { transform: translateX(-100%); } to { transform: translateX(320%); } }
+  @media (max-width: 760px) {
+    body { display: block; padding: 0; }
+    .preview-toolbar { padding: 18px 16px; }
+    .preview-toolbar h1 { font-size: 18px; }
+    .preview-controls { grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 10px 12px; margin: 14px 0; }
+    .preview-controls select { font-size: 16px; }
+    .preview-toolbar .preview-size { margin-top: 10px; }
+    #teamk-seasonal-directions .preview-device { width: 100%; max-width: 402px; height: auto; overflow: visible; border: 0; border-radius: 0; margin: 0 auto; }
+    #teamk-seasonal-directions .tk-phone { min-height: 0; padding-bottom: 24px; }
+  }
+</style>
+<script>
+(() => {
+  const root = document.getElementById('teamk-seasonal-directions');
+  const state = { variant: '작전 콘솔', season: 'autumn', screen: 'entry' };
+  const controls = { variant: document.getElementById('previewVariant'), season: document.getElementById('previewSeason'), screen: document.getElementById('previewScreen'), appearance: document.getElementById('previewAppearance') };
+  let demoTimer = null;
+  const seasons = {
+    spring: { label: '봄 작전', accent: '#386440', tint: '#e7efcc', night: '#c3dca0', darkTint: '#283a27', sheet: '#f4f6eb', deep: '#1f3525', code: 'GREEN', date: '04.19 일', title: '다시 필드로,<br>함께 출발.', copy: '겨우내 쌓인 출동력을 꺼낼 시간.', stamp: '봄 출동 완료' },
+    summer: { label: '여름 작전', accent: '#126b78', tint: '#d8f0ed', night: '#99dee0', darkTint: '#163941', sheet: '#edf6f5', deep: '#14343b', code: 'BLUE', date: '07.19 일', title: '여름의 열기,<br>팀워크로.', copy: '플레이는 뜨겁게, 휴식은 시원하게.', stamp: '여름 출동 완료' },
+    autumn: { label: '가을 작전', accent: '#945026', tint: '#f7e7d2', night: '#dcb18a', darkTint: '#352920', sheet: '#f5f0e8', deep: '#30261e', code: 'AMBER', date: '11.15 일', title: '오늘도,<br>한 팀으로.', copy: '선선한 바람, 뜨거운 팀워크.', stamp: '가을 출동 완료' },
+    winter: { label: '겨울 작전', accent: '#415b84', tint: '#e2eaf7', night: '#bacdea', darkTint: '#223047', sheet: '#eff2f7', deep: '#1d2b40', code: 'FROST', date: '12.20 일', title: '추위보다,<br>팀워크가 먼저.', copy: '손은 따뜻하게, 히트콜은 확실하게.', stamp: '겨울 출동 완료' }
+  };
+  const lines = ['명중률보다 출석률, 오늘도 상승.', '장비는 풀세팅. 체력은 체험판.', '오늘의 목표: 멋진 플레이, 깔끔한 히트콜.', '위장은 완벽. 웃음소리는 위치 노출.', '작전명: 무사히 즐기고 같이 귀가.'];
+  function render() {
+    const season = seasons[state.season];
+    for (const [key, value] of Object.entries({ accent: season.accent, tint: season.tint, night: season.night, 'dark-tint': season.darkTint, sheet: season.sheet, deep: season.deep })) root.style.setProperty('--tk-' + key, value);
+    root.querySelectorAll('[data-season-label]').forEach(el => { el.textContent = season.label; });
+    root.querySelectorAll('[data-game-date]').forEach(el => { el.textContent = season.date; });
+    root.querySelectorAll('[data-season-copy]').forEach(el => { el.textContent = season.copy; });
+    root.querySelectorAll('[data-operation-code]').forEach(el => { el.textContent = season.code; });
+    root.querySelector('[data-pass-title]').innerHTML = season.title;
+    root.querySelectorAll('[data-stamp]').forEach(el => { el.textContent = season.stamp; });
+    root.querySelectorAll('[data-variant]').forEach(el => { el.hidden = el.getAttribute('data-variant') !== state.variant; });
+    controls.variant.value = state.variant;
+    controls.season.value = state.season;
+    controls.screen.value = state.screen;
+    root.querySelectorAll('.tk-phone').forEach(phone => {
+      phone.dataset.screen = state.screen;
+      phone.querySelector('.tk-entry').hidden = state.screen !== 'entry';
+      phone.querySelector('.tk-finish').hidden = state.screen === 'entry';
+      phone.querySelector('.tk-result-label').textContent = state.screen === 'waiting' ? '올해 몇 번째 출석인지 확인하고 있어요' : '올해 나의 출석 기록';
+      phone.querySelector('.tk-result-copy').textContent = state.screen === 'waiting' ? '콜사인과 오늘의 미션을 읽으며 잠시 기다려 주세요.' : '다섯 번의 주말, 다섯 번의 팀워크.';
+    });
+  }
+  function stopDemo() { clearTimeout(demoTimer); demoTimer = null; }
+  Object.keys(state).forEach(key => {
+    controls[key].addEventListener('change', () => {
+      stopDemo();
+      state[key] = controls[key].value;
+      root.querySelectorAll('.tk-finish').forEach(el => { el.classList.remove('tk-arrive'); });
+      render();
+      root.querySelector('.preview-device').scrollTop = 0;
+    });
+  });
+  controls.appearance.addEventListener('change', () => {
+    document.documentElement.style.colorScheme = controls.appearance.value === 'auto' ? 'light dark' : controls.appearance.value;
+  });
+  root.querySelectorAll('.tk-phone').forEach(phone => {
+    const form = phone.querySelector('form');
+    const finish = phone.querySelector('.tk-finish');
+    finish.setAttribute('tabindex', '-1');
+    const showResult = () => {
+      if (!form.reportValidity()) return;
+      stopDemo();
+      state.screen = 'waiting';
+      render();
+      finish.classList.remove('tk-arrive');
+      finish.focus({ preventScroll: true });
+      finish.scrollIntoView({ block: 'nearest' });
+      demoTimer = setTimeout(() => {
+        demoTimer = null;
+        state.screen = 'done';
+        render();
+        finish.classList.add('tk-arrive');
+      }, 2000);
+    };
+    form.addEventListener('submit', event => { event.preventDefault(); showResult(); });
+    phone.querySelector('.tk-submit').addEventListener('click', showResult);
+    form.elements.minor.addEventListener('change', () => { form.querySelector('select').disabled = !form.elements.minor.checked; });
+    phone.querySelector('.tk-return').addEventListener('click', () => { stopDemo(); state.screen = 'entry'; render(); form.elements.name.focus({ preventScroll: true }); });
+    let lineIndex = Math.max(0, lines.indexOf(phone.querySelector('.tk-radio-text').textContent));
+    phone.querySelector('.tk-radio').addEventListener('click', () => { lineIndex = (lineIndex + 1) % lines.length; phone.querySelector('.tk-radio-text').textContent = lines[lineIndex]; });
+  });
+  window.addEventListener('pagehide', stopDemo);
+  render();
+})();
+</script>
+</body>
+</html>
