@@ -48,7 +48,7 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      margin: 10px 0 16px;
+      margin: 4px 0 10px;
     }
 
     .brand-logo {
@@ -59,7 +59,7 @@
 
     h1 {
       margin: 0;
-      font-size: 1.45rem;
+      font-size: 0.95rem;
       letter-spacing: -0.04em;
     }
 
@@ -73,7 +73,7 @@
 
     .game-info {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.65fr) minmax(0, 0.8fr);
       gap: 1px;
       background: var(--line);
       border-bottom: 1px solid var(--line);
@@ -89,13 +89,42 @@
       grid-column: 1 / -1;
       display: flex;
       align-items: center;
-      white-space: nowrap;
+      border-top: 1px solid var(--line);
+      padding: 12px 14px;
     }
 
     .game-item.account .account-info {
       flex: 1 1 auto;
       min-width: 0;
     }
+
+    .account .value { white-space: normal; overflow-wrap: anywhere; }
+
+    .briefing {
+      position: relative;
+      margin: 14px 14px 2px;
+      padding: 20px 18px;
+      border-radius: 14px;
+      background: radial-gradient(circle at top right, #235a6c, transparent 70%), #152d3a;
+      color: #fff;
+      border-left: 4px solid var(--season-accent, #a8dcae);
+    }
+
+    .briefing-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.7rem;
+      color: #c2d4dc;
+      letter-spacing: 0.06em;
+    }
+
+    .season-tag { color: var(--season-accent, #a8dcae); font-weight: 700; }
+    .briefing h2 { margin: 12px 0 9px; font-size: clamp(1.3rem, 5.8vw, 1.75rem); letter-spacing: -0.04em; word-break: keep-all; }
+    .briefing p { margin: 0; color: #d7e6ec; font-size: 0.86rem; line-height: 1.6; word-break: keep-all; }
+    .completion-callsign { margin: 10px 0; color: var(--brand-dark); font-weight: 700; }
+    .completion-badge { display: inline-block; padding: 5px 12px; margin-bottom: 10px; border: 1px solid #a7c9b0; border-radius: 20px; color: #246039; font-size: 0.85rem; }
 
     .copy-btn {
       flex: 0 0 auto;
@@ -273,53 +302,6 @@
       color: var(--brand-dark);
     }
 
-    .profile-settings {
-      margin: 0 14px 14px;
-      padding: 14px;
-      border: 1px solid #cfe1eb;
-      border-radius: 12px;
-      background: #f4fafc;
-    }
-
-    .profile-settings .check-row {
-      margin: 0 0 6px 0;
-    }
-
-    .profile-settings .privacy {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.76rem;
-      line-height: 1.4;
-    }
-
-    .saved-profile {
-      display: none;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px dashed #cfe1eb;
-      color: #46606f;
-      font-size: 0.84rem;
-    }
-
-    .saved-profile.visible {
-      display: flex;
-    }
-
-    .saved-profile button {
-      width: auto;
-      min-height: 34px;
-      margin: 0;
-      padding: 6px 10px;
-      border: 1px solid #b9cbd5;
-      background: #fff;
-      color: #506674;
-      font-size: 0.78rem;
-      box-shadow: none;
-    }
-
     [hidden] {
       display: none !important;
     }
@@ -332,7 +314,6 @@
       place-items: center;
       padding: 20px;
       background: rgba(14, 30, 44, 0.65);
-      backdrop-filter: blur(4px);
     }
 
     .completion-modal[hidden] {
@@ -370,12 +351,7 @@
       inset: -4px;
       border-radius: 50%;
       background: conic-gradient(var(--brand), #63d4ff, var(--brand));
-      animation: spin-ring 3s linear infinite;
       opacity: 0.55;
-    }
-
-    @keyframes spin-ring {
-      to { transform: rotate(360deg); }
     }
 
     .completion-logo-wrap::after {
@@ -495,48 +471,8 @@
       }
     }
 
-    /* ── 스켈레톤 로더 ── */
-    .skeleton-wrap {
-      padding: 16px 18px 18px;
-    }
-
-    .skeleton {
-      border-radius: 8px;
-      background: linear-gradient(90deg, #e8eff4 25%, #d4e3ec 50%, #e8eff4 75%);
-      background-size: 200% 100%;
-      animation: skeleton-shimmer 1.4s infinite;
-    }
-
-    .skeleton-line {
-      height: 14px;
-      margin-bottom: 10px;
-    }
-
-    .skeleton-line.short { width: 45%; }
-    .skeleton-line.long  { width: 85%; }
-
-    .skeleton-box {
-      height: 52px;
-      margin-bottom: 12px;
-    }
-
-    .skeleton-btn {
-      height: 48px;
-    }
-
-    @keyframes skeleton-shimmer {
-      0%   { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
-
-    /* ── 스켈레톤 → 폼 페이드인 ── */
-    #attendanceForm.form-ready {
-      animation: form-fadein 0.25s ease;
-    }
-
-    @keyframes form-fadein {
-      from { opacity: 0; transform: translateY(6px); }
-      to   { opacity: 1; transform: translateY(0); }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; scroll-behavior: auto !important; }
     }
   </style>
 </head>
@@ -547,43 +483,30 @@
       <h1>Team-K 모바일 출석</h1>
     </header>
 
-    <section class="card" aria-live="polite">
-      <div id="message" class="message"></div>
-
-      <!-- 스켈레톤 로더: 서버 응답 전 표시 -->
-      <div id="skeletonLoader" class="skeleton-wrap">
-        <div class="skeleton skeleton-line short"></div>
-        <div class="skeleton skeleton-line long"></div>
-        <div class="skeleton skeleton-box"></div>
-        <div class="skeleton skeleton-line short"></div>
-        <div class="skeleton skeleton-btn"></div>
-      </div>
-
-      <div id="gameInfo" class="game-info" hidden>
+    <section class="card">
+      <div id="gameInfo" class="game-info" aria-busy="true">
         <div class="game-item">
           <span class="label">게임일자</span>
-          <span id="gameDate" class="value"></span>
+          <span id="gameDate" class="value">확인 중</span>
         </div>
         <div class="game-item">
           <span class="label">필드명</span>
-          <span id="gameField" class="value"></span>
+          <span id="gameField" class="value">확인 중</span>
         </div>
         <div class="game-item">
           <span class="label">게임비</span>
-          <span id="gameFee" class="value"></span>
-        </div>
-        <div class="game-item account">
-          <div class="account-info">
-            <span class="label">입금계좌</span>
-            <span id="gameAccount" class="value"></span>
-          </div>
-          <button type="button" class="copy-btn" id="copyAccountBtn" aria-label="계좌번호 복사" title="계좌번호 복사">
-            <svg viewBox="0 0 24 24"><path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-          </button>
+          <span id="gameFee" class="value">확인 중</span>
         </div>
       </div>
 
-      <form id="attendanceForm" hidden>
+      <section id="briefing" class="briefing" aria-labelledby="operationTitle">
+        <div class="briefing-label"><span>오늘의 작전</span><span id="seasonTag" class="season-tag">TEAM-K</span></div>
+        <h2 id="operationTitle">주말을 사수하라</h2>
+        <p id="radioMessage">본부 수신. 오늘도 매너 플레이!</p>
+      </section>
+      <div id="message" class="message" role="status" aria-live="polite"></div>
+
+      <form id="attendanceForm">
         <div class="field inline">
           <label for="name">성명 <span class="required">(필수)</span></label>
           <input id="name" type="text" maxlength="30" autocomplete="name" placeholder="이름 입력" required>
@@ -599,19 +522,17 @@
             <option value="5">5명</option>
           </select>
         </label>
-        <button id="submitButton" type="submit">출석 등록</button>
+        <button id="submitButton" type="submit" disabled>게임 확인 중...</button>
       </form>
 
-      <div class="profile-settings" id="profileSettings" hidden>
-        <label class="check-row">
-          <input id="remember" type="checkbox" checked>
-          <span>다음 출석 때 이름을 자동으로 입력합니다.</span>
-        </label>
-        <p class="privacy">저장 동의 시 이름이 브라우저에만 저장됩니다.</p>
-        <div id="savedProfile" class="saved-profile">
-          <span>저장된 사용자 정보가 적용되었습니다.</span>
-          <button id="clearProfileButton" type="button">저장정보 삭제</button>
+      <div id="accountInfo" class="game-item account" hidden>
+        <div class="account-info">
+          <span class="label">입금계좌</span>
+          <span id="gameAccount" class="value"></span>
         </div>
+        <button type="button" class="copy-btn" id="copyAccountBtn" aria-label="계좌번호 복사" title="계좌번호 복사">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+        </button>
       </div>
     </section>
   </main>
@@ -621,6 +542,8 @@
         <img class="completion-logo" src="./images/team_k_logo.png" alt="Team-K 로고" width="60" height="60">
       </div>
       <h2 id="completionTitle"><span id="completionName" class="completion-name"></span>님 출석완료!</h2>
+      <p id="completionCallsign" class="completion-callsign"></p>
+      <span id="completionBadge" class="completion-badge" hidden></span>
       <div id="completionSub" class="completion-sub">
         <span id="completionCountText">올해 <span id="completionCountSpinner" class="count-spinner" aria-label="조회 중"></span><strong id="completionCount" hidden>-</strong>번째 게임 참석!</span>
         <span id="completionPhrase" class="completion-phrase"></span>
@@ -645,10 +568,37 @@
       token: query.get('token') || ''
     };
 
-    // ── 콜드스타트 사전 예열: 페이지 로드 즉시 가벼운 health 요청으로 Apps Script VM 활성화 ──
-    const warmupPromise = fetch(`${APPS_SCRIPT_URL}?action=health&t=${Date.now()}`, {
-      cache: 'no-store', credentials: 'omit', redirect: 'follow'
-    }).catch(() => {});
+    // 문구 교체는 이 정적 데이터만 수정합니다. 게임일 기준으로 자동 순환합니다.
+    const FUN_CONTENT = {
+      seasons: [
+        { label: '동계 출동', accent: '#b9e2fa', operations: ['동장군도 출석 체크', '겨울 필드 사수 작전', '추위보다 뜨거운 팀워크', '주말을 사수하라'] },
+        { label: '봄 필드 복귀', accent: '#bfe5a0', operations: ['필드에 봄이 왔다', '겨울잠 해제 작전', '봄바람 타고 출동', '스트레스 탈출 작전'] },
+        { label: '여름 보급 작전', accent: '#a7ece2', operations: ['수분 보급 이상 무', '더위 탈출 작전', '그늘에서 작전 회의', '주말 에너지 충전'] },
+        { label: '가을 필드 데이', accent: '#ffd39a', operations: ['가을 필드를 접수하라', '주말을 사수하라', '팀워크 수확 작전', '스트레스 탈출 작전'] }
+      ],
+      radio: ['본부 수신. 오늘도 매너 플레이!', '엄폐는 확실하게, 인사는 반갑게!', '탄창은 가득, 걱정은 빈칸!', '히트는 크게, 웃음은 더 크게!', '장비 점검 완료? 재미도 챙기세요.', '오늘의 적은 쌓인 스트레스!', '게임 끝나면 우리 모두 같은 편!', '명중보다 중요한 건 함께하는 주말!'],
+      callsigns: ['엄폐 전문가', '탄창 마스터', '필드 단골', '팀워크 대장', '매너 에이스', '주말 수호자', '보급의 달인', '작전 참모'],
+      missions: ['오늘 처음 만난 팀원과 인사하기', '멋진 플레이 한 번 칭찬하기', '휴식 시간에 물 한 잔 챙기기', '게임 후 팀원에게 수고했다고 말하기', '장비 점검 한 번 더 하기', '팀원과 즐거운 순간 하나 남기기']
+    };
+    let attendanceOpen = false;
+    let submitting = false;
+    let completionRequest = 0;
+
+    function contentIndex(value, length) {
+      let hash = 0;
+      for (let i = 0; i < value.length; i++) hash = (Math.imul(hash, 31) + value.charCodeAt(i)) >>> 0;
+      return hash % length;
+    }
+
+    function showBriefing() {
+      const month = Number(attendance.date.slice(5, 7));
+      const day = Math.abs(Math.floor(Date.parse(attendance.date + 'T00:00:00Z') / 86400000) || 0);
+      const season = FUN_CONTENT.seasons[month >= 3 && month <= 5 ? 1 : month >= 6 && month <= 8 ? 2 : month >= 9 && month <= 11 ? 3 : 0];
+      document.getElementById('seasonTag').textContent = season.label;
+      document.getElementById('briefing').style.setProperty('--season-accent', season.accent);
+      document.getElementById('operationTitle').textContent = season.operations[day % season.operations.length];
+      document.getElementById('radioMessage').textContent = FUN_CONTENT.radio[day % FUN_CONTENT.radio.length];
+    }
 
     const form = document.getElementById('attendanceForm');
     const dom = {
@@ -657,8 +607,6 @@
       name: document.getElementById('name'),
       minor: document.getElementById('minor'),
       minorCount: document.getElementById('minorCount'),
-      remember: document.getElementById('remember'),
-      savedProfile: document.getElementById('savedProfile'),
       gameInfo: document.getElementById('gameInfo'),
       gameDate: document.getElementById('gameDate'),
       gameField: document.getElementById('gameField'),
@@ -667,7 +615,6 @@
       completionModal: document.getElementById('completionModal'),
       completionCloseButton: document.getElementById('completionCloseButton'),
       closeFallback: document.getElementById('closeFallback'),
-      skeletonLoader: document.getElementById('skeletonLoader'),
       shell: document.querySelector('.shell')
     };
 
@@ -678,8 +625,12 @@
     }
 
     function setSubmitting(isSubmitting) {
-      dom.submitButton.disabled = isSubmitting;
-      dom.submitButton.textContent = isSubmitting ? '등록 중...' : '출석 등록';
+      submitting = isSubmitting;
+      dom.submitButton.disabled = isSubmitting || !attendanceOpen;
+      dom.submitButton.textContent = isSubmitting ? '등록 중...' : attendanceOpen ? '출석 등록' : '접수 불가';
+      dom.name.disabled = isSubmitting;
+      dom.minor.disabled = isSubmitting;
+      dom.minorCount.disabled = isSubmitting || !dom.minor.checked;
     }
 
     function readJsonResponse(response) {
@@ -695,9 +646,7 @@
       });
     }
 
-    async function requestAttendanceInfo() {
-      // warmup 완료 대기 후 실제 데이터 요청 (VM이 warm 상태 보장)
-      await warmupPromise;
+    function requestAttendanceInfo() {
       const params = new URLSearchParams({
         action: 'mobile_attendance_info',
         spreadsheetId: attendance.spreadsheetId,
@@ -762,8 +711,6 @@
         return;
       }
       dom.name.value = name;
-      dom.remember.checked = true;
-      dom.savedProfile.classList.add('visible');
       try {
         localStorage.setItem(PROFILE_KEY, JSON.stringify({ name }));
       } catch (error) {
@@ -778,12 +725,11 @@
         // Browser privacy settings can disable local storage.
       }
       removeProfileCookie();
-      dom.savedProfile.classList.remove('visible');
     }
 
     function persistRememberedName() {
       const name = dom.name.value.trim();
-      if (!dom.remember.checked || !name) {
+      if (!name) {
         removeSavedProfile();
         return;
       }
@@ -793,78 +739,55 @@
         // The cookie is the fallback for embedded browsers.
       }
       writeProfileCookie(name);
-      dom.savedProfile.classList.add('visible');
-    }
-
-    function clearSavedProfile() {
-      removeSavedProfile();
-      dom.name.value = '';
-      dom.remember.checked = false;
-      dom.name.focus();
-    }
-
-    function hideSkeleton() {
-      if (dom.skeletonLoader) dom.skeletonLoader.hidden = true;
     }
 
     function renderAttendanceInfo(result) {
-      hideSkeleton();
       if (!result.success) {
         throw new Error(result.error || '출석 정보를 확인할 수 없습니다.');
       }
       dom.gameDate.textContent = result.date || attendance.date;
       dom.gameField.textContent = result.field || '-';
+      dom.gameField.title = result.field || '';
       dom.gameFee.textContent = result.fee ? `${result.fee}원` : '-';
       dom.gameAccount.textContent = result.account || '-';
-      dom.gameInfo.hidden = false;
+      dom.gameInfo.setAttribute('aria-busy', 'false');
+      document.getElementById('accountInfo').hidden = !result.account;
+      attendanceOpen = Boolean(result.open);
+      setSubmitting(false);
       if (!result.open) {
         showMessage(result.message || '모바일 출석 접수가 마감되었습니다.', 'error');
         return;
       }
       dom.message.className = 'message';
-      form.classList.add('form-ready');
-      form.hidden = false;
-      document.getElementById('profileSettings').hidden = false;
-      readSavedProfile();
-      dom.name.focus();
     }
 
     function initialize() {
+      readSavedProfile();
+      showBriefing();
       if (!attendance.spreadsheetId || !attendance.date || !attendance.token) {
-        hideSkeleton();
+        dom.gameInfo.setAttribute('aria-busy', 'false');
+        setSubmitting(false);
         showMessage('QR 주소에 필요한 정보가 없습니다. 운영진에게 새 QR을 요청해주세요.', 'error');
         return;
-      }
-
-      // 2번: 저장된 이름을 서버 응답과 병렬로 즉시 이름 입력창에 채움
-      // 쿠키를 우선 읽고, 없으면 localStorage 시도 (ITP 대응)
-      const prefilledName = readProfileCookie() || (() => {
-        try {
-          const p = JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null');
-          return (p && typeof p.name === 'string') ? p.name.trim() : '';
-        } catch (e) { return ''; }
-      })();
-      if (prefilledName) {
-        dom.name.value = prefilledName;
       }
 
       requestAttendanceInfo()
         .then(renderAttendanceInfo)
         .catch(error => {
-          hideSkeleton();
+          dom.gameInfo.setAttribute('aria-busy', 'false');
+          setSubmitting(false);
           showMessage(error.message || '출석 정보를 불러오지 못했습니다.', 'error');
         });
     }
 
-    document.getElementById('clearProfileButton').addEventListener('click', clearSavedProfile);
     dom.name.addEventListener('input', persistRememberedName);
-    dom.remember.addEventListener('change', persistRememberedName);
     window.addEventListener('pagehide', persistRememberedName);
     dom.minor.addEventListener('change', event => {
       dom.minorCount.disabled = !event.target.checked;
     });
 
     function closeMobileAttendance() {
+      completionRequest++;
       dom.completionModal.hidden = true;
       dom.shell.hidden = true;
       dom.closeFallback.hidden = false;
@@ -880,17 +803,20 @@
       if (match) {
         accNum = match.reduce((a, b) => a.length > b.length ? a : b, '');
       }
-      if (accNum) {
+      if (accNum && navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(accNum).then(() => {
           showMessage('계좌번호가 복사되었습니다.', 'success');
         }).catch(() => {
           showMessage('복사 기능을 지원하지 않는 환경입니다.', 'error');
         });
+      } else {
+        showMessage('계좌번호를 길게 눌러 복사해주세요.', 'info');
       }
     });
 
     form.addEventListener('submit', event => {
       event.preventDefault();
+      if (!attendanceOpen || submitting) return;
       const name = dom.name.value.trim();
       if (!name) {
         showMessage('성명을 입력해주세요.', 'error');
@@ -926,25 +852,30 @@
         const countTextEl = document.getElementById('completionCountText');
         const subEl = document.getElementById('completionSub');
         const phraseEl = document.getElementById('completionPhrase');
-        
-        const phrases = [
-          "오늘도 비비탄 샤워!", "탄창은 가득, 걱정은 빈칸!", "출석 완료, 엄폐 시작!", "오늘의 MVP는 나야 나!",
-          "명중보다 중요한 출석!", "조준은 신중, 돌격은 신속!", "히트는 크게, 변명은 작게!", "탄은 피해도 출석은 못 피해!",
-          "오늘도 안전하게 탕탕!", "고글 김서림 없는 쾌적한 하루!", "팀킬 조심, 피아 식별 철저!", "내 체력보다 긴 게임!",
-          "탄창 비우고 스트레스도 비우고!", "오늘은 내가 돌격대장!", "맞기 전에 쏘는 게 국룰!", "작전명: 신나게 놀기!",
-          "게임 끝나면 다 같은 편!", "히트 외쳐도 재미는 계속!", "오늘도 전술적 산책!", "내 위치는 비밀, 출석은 공개!",
-          "한 발의 명중, 백 번의 웃음!", "장비 뽐뿌는 끝이 없다!", "리스폰하고 다시 가자!", "총은 가볍게, 매너는 묵직하게!",
-          "조준선 너머에 주말이!", "오늘도 풀장비, 풀웃음!", "잘 맞히고 잘 인정하기!", "승패보다 중요한 건 뒤풀이!",
-          "존버는 승리한다, 아마도!", "뛰지 말고 안전하게!", "정확한 홉업 세팅, 완벽한 사거리!", "다음 게임도 함께 탕탕!"
-        ];
-        phraseEl.textContent = phrases[Math.floor(Math.random() * phrases.length)];
+        const requestId = ++completionRequest;
+        const badge = document.getElementById('completionBadge');
+        badge.hidden = true;
+        const seed = attendance.date + '|' + name;
+        document.getElementById('completionCallsign').textContent = '오늘의 콜사인: ' + FUN_CONTENT.callsigns[contentIndex(seed, FUN_CONTENT.callsigns.length)];
+        phraseEl.textContent = '오늘의 미션: ' + FUN_CONTENT.missions[contentIndex(seed, FUN_CONTENT.missions.length)];
+
+        function displayCount(value) {
+          if (requestId !== completionRequest) return;
+          const count = Number(value);
+          countSpinner.hidden = true;
+          countTextEl.hidden = !Number.isInteger(count) || count < 1;
+          if (countTextEl.hidden) return;
+          countEl.textContent = count;
+          countEl.hidden = false;
+          countEl.classList.add('count-pop');
+          const labels = { 1: '첫 출동 완료', 5: '5회 출석 · 필드 적응 완료', 10: '10회 출석 · 필드 단골', 20: '20회 출석 · 팀워크 베테랑', 30: '30회 출석 · 주말 수호자', 50: '50회 출석 · Team-K 레전드' };
+          badge.textContent = labels[count] || '';
+          badge.hidden = !labels[count];
+        }
 
         // 연간 횟수가 submit 응답에 포함된 경우 (백엔드 미수정 호환)
         if (result.yearlyCount && result.yearlyCount > 0) {
-          countEl.textContent = result.yearlyCount;
-          countSpinner.hidden = true;
-          countEl.hidden = false;
-          countTextEl.hidden = false;
+          displayCount(result.yearlyCount);
         } else {
           // 로딩 상태: "올해 [스피너]번째 게임 참석!" 표시
           countSpinner.hidden = false;
@@ -963,18 +894,9 @@
           fetch(`${APPS_SCRIPT_URL}?${ycParams.toString()}`, {
             cache: 'no-store', credentials: 'omit', redirect: 'follow'
           }).then(readJsonResponse).then(ycResult => {
-            if (ycResult.yearlyCount && ycResult.yearlyCount > 0) {
-              countEl.textContent = ycResult.yearlyCount;
-              countSpinner.hidden = true;
-              countEl.hidden = false;
-              countEl.classList.remove('count-pop');
-              void countEl.offsetWidth; // 리플로우 트리거하여 애니메이션 재실행
-              countEl.classList.add('count-pop');
-            } else {
-              countTextEl.hidden = true;
-            }
+            displayCount(ycResult.success ? ycResult.yearlyCount : 0);
           }).catch(() => {
-            countTextEl.hidden = true;
+            displayCount(0);
           });
         }
         subEl.hidden = false;
